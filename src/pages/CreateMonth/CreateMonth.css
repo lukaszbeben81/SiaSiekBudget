@@ -1,0 +1,521 @@
+/* ============================================
+   CREATE MONTH PAGE - SCOPED STYLES
+   All styles prefixed with .create-month-container
+   to prevent affecting other pages
+   ============================================ */
+
+.create-month-container {
+  min-height: 100vh;
+  background: var(--bg-primary);
+  padding: 0.75rem;
+  font-size: 0.85rem;
+}
+
+@media (min-width: 768px) {
+  .create-month-container {
+    padding: 1rem;
+  }
+}
+
+.create-month-container .create-month-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.create-month-container .create-month-header h1 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.create-month-container .create-month-content {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Combined Banner: Progress + Month Info */
+.create-month-container .create-month-banner {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  background: var(--bg-secondary);
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  margin-bottom: 0.75rem;
+  border: 1px solid var(--border-color);
+}
+
+.create-month-container .progress-steps {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.create-month-container .progress-steps .step {
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  transition: all 0.2s;
+}
+
+.create-month-container .progress-steps .step.active {
+  background: var(--color-income);
+  border-color: var(--color-income);
+  color: var(--bg-primary);
+  opacity: 0.6;
+}
+
+.create-month-container .progress-steps .step.current {
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+.create-month-container .month-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.create-month-container .month-info .month-name {
+  font-weight: 600;
+  color: var(--color-income);
+  font-size: 0.9rem;
+  text-transform: capitalize;
+}
+
+.create-month-container .month-info .month-period {
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+}
+
+/* Step Content */
+.create-month-container .step-content {
+  background: var(--bg-secondary);
+  padding: 0.75rem;
+  border-radius: 6px;
+  border: 1px solid var(--border-color);
+}
+
+.create-month-container .step-content h2 {
+  margin: 0 0 0.25rem 0;
+  font-size: 0.95rem;
+}
+
+.create-month-container .step-content .text-secondary {
+  font-size: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+/* Items List - scoped to create-month */
+.create-month-container .items-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-bottom: 0.75rem;
+}
+
+.create-month-container .item-card {
+  background: var(--bg-primary);
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  border: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  transition: all 0.2s;
+}
+
+.create-month-container .item-card:hover {
+  border-color: var(--color-income);
+}
+
+.create-month-container .item-card.locked {
+  background: rgba(0, 255, 153, 0.05);
+  border-color: rgba(0, 255, 153, 0.3);
+}
+
+.create-month-container .item-card.locked:hover {
+  border-color: rgba(0, 255, 153, 0.5);
+}
+
+.locked-badge {
+  font-size: 0.7rem;
+  margin-left: 0.25rem;
+}
+
+.create-month-container .item-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex: 1;
+  flex-wrap: wrap;
+}
+
+.create-month-container .item-name-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 150px;
+}
+
+.create-month-container .item-name-row strong {
+  font-size: 0.8rem;
+}
+
+.create-month-container .item-category {
+  display: inline-block;
+  padding: 0.1rem 0.4rem;
+  background: var(--color-savings);
+  color: var(--bg-primary);
+  border-radius: 4px;
+  font-size: 0.6rem;
+  font-weight: 600;
+}
+
+.create-month-container .item-amount {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--color-income);
+  min-width: 100px;
+}
+
+.create-month-container .item-amount small {
+  font-size: 0.65rem;
+  color: var(--text-secondary);
+  margin-left: 0.25rem;
+}
+
+.create-month-container .checkbox-label-inline {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.7rem;
+  cursor: pointer;
+}
+
+.create-month-container .checkbox-label-inline input[type="checkbox"] {
+  width: auto;
+  margin: 0;
+  cursor: pointer;
+  transform: scale(0.85);
+}
+
+.create-month-container .item-actions {
+  display: flex;
+  gap: 0.35rem;
+  margin-left: auto;
+}
+
+/* Add Item Form - scoped */
+.create-month-container .add-item-form {
+  background: var(--bg-primary);
+  padding: 0.75rem;
+  border-radius: 6px;
+  margin-top: 0.5rem;
+  border: 1px solid var(--border-color);
+}
+
+.create-month-container .add-item-form.compact {
+  padding: 0.6rem;
+}
+
+.create-month-container .add-item-form h3 {
+  margin: 0 0 0.5rem 0;
+  font-size: 0.8rem;
+}
+
+.create-month-container .add-item-form .form-group label {
+  font-size: 0.7rem;
+}
+
+.create-month-container .add-item-form .form-group input,
+.create-month-container .add-item-form .form-group select {
+  padding: 0.35rem 0.5rem;
+  font-size: 0.75rem;
+}
+
+/* Step Navigation */
+.create-month-container .step-navigation {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-top: 1rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--border-color);
+}
+
+/* Summary Grid */
+.create-month-container .summary-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+@media (min-width: 900px) {
+  .create-month-container .summary-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.create-month-container .summary-column {
+  background: var(--bg-primary);
+  padding: 0.6rem;
+  border-radius: 6px;
+  border: 1px solid var(--border-color);
+}
+
+.create-month-container .summary-column h3 {
+  margin: 0 0 0.5rem 0;
+  font-size: 0.8rem;
+  color: var(--color-income);
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 0.35rem;
+}
+
+.create-month-container .summary-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.create-month-container .summary-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding-bottom: 0.35rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.create-month-container .summary-item:last-child {
+  border-bottom: none;
+}
+
+.create-month-container .summary-item-name {
+  font-weight: 600;
+  font-size: 0.75rem;
+}
+
+.create-month-container .summary-item-amount {
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.create-month-container .summary-item-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  font-size: 0.7rem;
+}
+
+.create-month-container .summary-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 0.5rem;
+  margin-top: 0.35rem;
+  border-top: 2px solid var(--border-color);
+  font-size: 0.75rem;
+}
+
+/* Balance column special styling */
+.create-month-container .summary-column.summary-balance {
+  border-color: var(--color-income);
+  background: rgba(0, 255, 153, 0.05);
+}
+
+.create-month-container .summary-column.summary-balance h3 {
+  color: var(--color-income);
+}
+
+.create-month-container .balance-total {
+  border-top-color: var(--color-income);
+  font-size: 0.85rem;
+}
+
+@media (max-width: 768px) {
+  .create-month-container .item-info {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.35rem;
+  }
+  
+  .create-month-container .item-actions {
+    margin-left: 0;
+    width: 100%;
+  }
+  
+  .create-month-container .step-navigation {
+    flex-direction: column;
+  }
+}
+
+/* Catalog Modal */
+.create-month-container .catalog-modal {
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  padding: 0.6rem;
+  margin-top: 0.5rem;
+}
+
+.create-month-container .catalog-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+  padding-bottom: 0.35rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.create-month-container .catalog-header h3 {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--color-income);
+}
+
+.create-month-container .catalog-content {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.5rem;
+}
+
+@media (min-width: 768px) {
+  .create-month-container .catalog-content {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.create-month-container .catalog-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.create-month-container .catalog-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.4rem 0.6rem;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.create-month-container .catalog-item:hover {
+  border-color: var(--color-income);
+}
+
+.create-month-container .catalog-item.selected {
+  border-color: var(--color-income);
+  background: rgba(0, 255, 153, 0.1);
+}
+
+.create-month-container .catalog-item-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.create-month-container .catalog-item-info strong {
+  font-size: 0.75rem;
+}
+
+.create-month-container .catalog-item-amount {
+  font-weight: 600;
+  color: var(--color-income);
+  font-size: 0.75rem;
+}
+
+.create-month-container .catalog-edit-panel {
+  background: var(--bg-secondary);
+  padding: 0.6rem;
+  border-radius: 6px;
+  border: 1px solid var(--color-income);
+}
+
+.create-month-container .catalog-edit-panel h4 {
+  margin: 0 0 0.5rem 0;
+  font-size: 0.75rem;
+  color: var(--color-income);
+}
+
+.create-month-container .catalog-edit-panel .form-group {
+  margin-bottom: 0.4rem;
+}
+
+.create-month-container .catalog-edit-panel .form-group label {
+  font-size: 0.65rem;
+  margin-bottom: 0.15rem;
+}
+
+.create-month-container .catalog-edit-panel .form-group input {
+  padding: 0.3rem 0.5rem;
+  font-size: 0.75rem;
+}
+
+.create-month-container .catalog-edit-panel .btn-primary {
+  width: 100%;
+  margin-top: 0.35rem;
+  padding: 0.4rem;
+  font-size: 0.75rem;
+}
+
+/* Scoped form styles for create-month */
+.create-month-container .form-group {
+  margin-bottom: 0.5rem;
+}
+
+.create-month-container .form-group label {
+  font-size: 0.75rem;
+  margin-bottom: 0.25rem;
+}
+
+.create-month-container .form-group input,
+.create-month-container .form-group select {
+  padding: 0.4rem 0.6rem;
+  font-size: 0.8rem;
+}
+
+.create-month-container .form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+}
+
+.create-month-container .checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.75rem;
+  cursor: pointer;
+}
+
+/* Scoped button sizes */
+.create-month-container .btn-primary,
+.create-month-container .btn-secondary {
+  padding: 0.4rem 0.8rem;
+  font-size: 0.75rem;
+}
+
+.create-month-container .btn-xs {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.65rem;
+}
+
+.create-month-container .btn-sm {
+  padding: 0.3rem 0.6rem;
+  font-size: 0.7rem;
+}

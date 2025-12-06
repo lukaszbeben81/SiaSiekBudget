@@ -1,0 +1,60 @@
+// Polskie suchary - lokalna baza żartów
+const polishJokes = [
+  "Jak nazywa się bezrobotny programista? Debugger życiowy.",
+  "Co mówi toster do chleba? Zaraz ci będzie gorąco!",
+  "Dlaczego Excel jest taki samotny? Bo ma tylko komórki.",
+  "Co robi informatyk na plaży? Szuka Wi-Fi.",
+  "Jak nazywa się leniwy kangur? Podskakiwałem.",
+  "Co mówi jeden budżet do drugiego? Hej, nie wychodź z ramy!",
+  "Dlaczego oszczędzanie jest jak dieta? Bo zawsze zaczynamy od poniedziałku.",
+  "Co robi skąpy duch? Straszy, ale oszczędnie.",
+  "Jak nazywa się bogaty ślimak? Na$$a.",
+  "Dlaczego portfel poszedł do psychiatry? Bo miał pustkę w środku.",
+  "Co mówi karta kredytowa do portfela? Jestem tylko gościem, ale zostaję na dłużej.",
+  "Jak nazywa się leniwiec z budżetem? Oszczędniak w tempie życia.",
+  "Co jest wspólnego między dietą a budżetem? Oba kończą się w weekend.",
+  "Dlaczego pieniądz jest jak mydło? Bo ciągle ucieka z rąk.",
+  "Co mówi pusty portfel? Kiedyś tu było weselej...",
+  "Jak nazywa się optymistyczny bankrut? Przyszły milioner.",
+  "Dlaczego matematyk jest biedny? Bo ciągle dzieli.",
+  "Co robi programista gdy nie ma pieniędzy? Kompiluje się z sytuacją.",
+  "Jak nazywa się oszczędny Superman? Oszczędman.",
+  "Dlaczego bankomat jest smutny? Bo ludzie tylko biorą, a nigdy nie dają.",
+  "Co mówi jedna złotówka do drugiej? Razem damy radę!",
+  "Jak nazywa się pesymistyczny inwestor? Ryzykowałbym... ale nie.",
+  "Dlaczego budżet domowy jest jak Tetris? Wszystko musi się zmieścić.",
+  "Co jest trudniejsze: zarabianie czy oszczędzanie? Tak.",
+  "Jak nazywa się bogaty włos? Lokówka kapitałowa.",
+  "Dlaczego oszczędzanie w styczniu jest łatwe? Bo luty jest krótki.",
+  "Co mówi pusta skarbonka? Echo...",
+  "Jak nazywa się finansowy pesymista? Księgowy.",
+  "Dlaczego kalkulator nie chodzi na randki? Bo ma za dużo problemów.",
+  "Co robi mądry pieniądz? Pracuje, gdy ty śpisz.",
+  "Jak nazywa się skąpa pszczoła? Oszczędnica.",
+  "Dlaczego wypłata jest jak tęcza? Szybko znika.",
+  "Co mówi inflacja do oszczędności? Kurczysz się!",
+  "Jak nazywa się optymistyczny portfel? Wierzę w jutro.",
+  "Dlaczego programista oszczędza? Bo wie, że każdy bajt się liczy.",
+  "Co jest wspólnego między lodówką a kontem bankowym? Obie powinny być pełne.",
+  "Jak nazywa się bogaty cień? Zasłona majątku.",
+  "Dlaczego rachunek telefoniczny płacze? Bo zawsze go obcinają.",
+  "Co mówi konto oszczędnościowe? Zostań ze mną dłużej!",
+  "Jak nazywa się skąpy magik? Abrakadabra... i znikam z rachunkiem.",
+  "Dlaczego moje oszczędności są jak ninja? Bo ich nie widać.",
+  "Co robi budżet w weekend? Rozpada się.",
+  "Jak nazywa się bogaty owad? Złotoskrzydły.",
+  "Dlaczego podatki są nieuniknione? Bo nawet śmierć nie daje paragonu.",
+  "Co mówi stówka do dyszki? Kiedyś byłam jak ty, ale urosłam.",
+  "Jak nazywa się pesymistyczny sejf? Pustakowiec.",
+  "Dlaczego pieniądze lubią ciemność? Bo w portfelu jest ciemno.",
+  "Co jest lepsze niż milion złotych? Dwa miliony.",
+  "Jak nazywa się bogaty tort? Rogalik kapitałowy.",
+  "Dlaczego oszczędzam? Bo przyszłość jest droga."
+];
+
+function getRandomJoke() {
+  const index = Math.floor(Math.random() * polishJokes.length);
+  return polishJokes[index];
+}
+
+module.exports = { getRandomJoke, polishJokes };
