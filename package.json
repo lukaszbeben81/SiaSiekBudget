@@ -38,5 +38,45 @@
     "typescript": "^5.3.3",
     "vite": "^5.0.8",
     "wait-on": "^7.2.0"
+  },
+  "build": {
+    "appId": "com.siasiek.budget",
+    "productName": "SiaSiek Budget",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "dist/**/*",
+      "electron/**/*",
+      "package.json"
+    ],
+    "extraResources": [
+      {
+        "from": "public",
+        "to": "public",
+        "filter": ["**/*"]
+      }
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": ["x64"]
+        }
+      ],
+      "icon": "public/logo1.png"
+    },
+    "nsis": {
+      "oneClick": true,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": false,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "SiaSiek Budget"
+    },
+    "asar": true,
+    "asarUnpack": [
+      "node_modules/lowdb/**/*"
+    ]
   }
 }

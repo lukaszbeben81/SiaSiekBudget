@@ -198,6 +198,7 @@ export interface ElectronAPI {
     incomeNames?: boolean;
     selectedMonths?: number[];
     debtHistory?: boolean;
+    piggybanks?: boolean;
   }) => Promise<Record<string, number>>;
   
   // Backup & Restore
