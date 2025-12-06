@@ -18,7 +18,9 @@ function createWindow() {
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
-      preload: path.join(__dirname, 'preload.js')
+      preload: path.join(__dirname, 'preload.js'),
+      // Wymagane dla ES modules w file:// protokole
+      webSecurity: false
     }
   });
 
@@ -27,6 +29,7 @@ function createWindow() {
     mainWindow.loadURL('http://localhost:3000');
     mainWindow.webContents.openDevTools();
   } else {
+    // W produkcji - ładuj z folderu dist
     const indexPath = path.join(__dirname, '..', 'dist', 'index.html');
     mainWindow.loadFile(indexPath);
   }

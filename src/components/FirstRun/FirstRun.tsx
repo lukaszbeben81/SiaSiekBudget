@@ -14,7 +14,6 @@ const FirstRun: React.FC<FirstRunProps> = ({ onComplete }) => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [billingDay, setBillingDay] = useState(1);
-  const [savingsPercentage, setSavingsPercentage] = useState(10);
   const [weeklyGroceries, setWeeklyGroceries] = useState(500);
   const [dailyExpenses, setDailyExpenses] = useState(100);
   const [error, setError] = useState('');
@@ -53,7 +52,6 @@ const FirstRun: React.FC<FirstRunProps> = ({ onComplete }) => {
       console.log('Saving settings...');
       await window.electronAPI.updateSettings({
         billing_day: billingDay,
-        savings_percentage: savingsPercentage,
         weekly_groceries: weeklyGroceries,
         daily_expenses: dailyExpenses,
         password_enabled: 1
@@ -143,19 +141,6 @@ const FirstRun: React.FC<FirstRunProps> = ({ onComplete }) => {
                 <small className="text-muted">
                   Okres rozliczeniowy rozpoczyna się w tym dniu
                 </small>
-              </div>
-
-              <div className="form-group">
-                <label>Procent dochodu na oszczędności (%)</label>
-                <input
-                  type="number"
-                  value={savingsPercentage}
-                  onChange={(e) => setSavingsPercentage(Number(e.target.value))}
-                  onFocus={clearZeroOnFocus}
-                  min="0"
-                  max="100"
-                  step="0.5"
-                />
               </div>
 
               <div className="form-group">

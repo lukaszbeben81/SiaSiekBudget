@@ -293,7 +293,7 @@ const Dashboard: React.FC = () => {
       <div className="dashboard-header">
         <div className="dashboard-brand">
           <img 
-            src="/logo.png" 
+            src="./logo.png" 
             alt="Logo" 
             className="dashboard-logo" 
             onClick={handleLogoClick}
@@ -489,7 +489,7 @@ const Dashboard: React.FC = () => {
             </button>
             <div className="info-modal-header">
               <div className="info-logo-circle">
-                <img src="/logo.png" alt="Logo" className="info-modal-logo" />
+                <img src="./logo.png" alt="Logo" className="info-modal-logo" />
               </div>
               <h2>{appName}</h2>
               <span className="info-version">v{appVersion}</span>

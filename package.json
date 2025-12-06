@@ -35,6 +35,7 @@
     "concurrently": "^8.2.2",
     "electron": "^28.0.0",
     "electron-builder": "^24.9.1",
+    "png-to-ico": "^3.0.1",
     "typescript": "^5.3.3",
     "vite": "^5.0.8",
     "wait-on": "^7.2.0"
@@ -42,41 +43,47 @@
   "build": {
     "appId": "com.siasiek.budget",
     "productName": "SiaSiek Budget",
+    "copyright": "Copyright © 2025 SiaSiek",
     "directories": {
-      "output": "dist"
+      "output": "release",
+      "buildResources": "build"
     },
     "files": [
       "dist/**/*",
       "electron/**/*",
+      "node_modules/**/*",
       "package.json"
     ],
     "extraResources": [
       {
         "from": "public",
         "to": "public",
-        "filter": ["**/*"]
+        "filter": [
+          "**/*"
+        ]
       }
     ],
     "win": {
       "target": [
         {
           "target": "nsis",
-          "arch": ["x64"]
+          "arch": [
+            "x64"
+          ]
         }
       ],
-      "icon": "public/logo1.png"
+      "publisherName": "SiaSiek"
     },
     "nsis": {
-      "oneClick": true,
-      "perMachine": false,
-      "allowToChangeInstallationDirectory": false,
+      "oneClick": false,
+      "perMachine": true,
+      "allowElevation": true,
+      "allowToChangeInstallationDirectory": true,
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
-      "shortcutName": "SiaSiek Budget"
+      "shortcutName": "SiaSiek Budget",
+      "warningsAsErrors": false
     },
-    "asar": true,
-    "asarUnpack": [
-      "node_modules/lowdb/**/*"
-    ]
+    "asar": false
   }
 }
