@@ -67,9 +67,14 @@ SiaSiek Budget to kompleksowa aplikacja do zarządzania finansami osobistymi, kt
 ## 🚀 Instalacja
 
 ### Instalator Windows
-1. Pobierz plik `siasiek-budget Setup 1.0.0.exe` z sekcji [Releases](../../releases)
+1. Pobierz plik `SiaSiek Budget Setup 1.0.0.exe` z sekcji [Releases](../../releases)
 2. Uruchom instalator
-3. Aplikacja zostanie zainstalowana i automatycznie uruchomiona
+3. **Ostrzeżenie Windows Defender SmartScreen:**
+   - Jeśli pojawi się komunikat "System Windows ochronił ten komputer"
+   - Kliknij **"Więcej informacji"** → **"Uruchom mimo to"**
+   - To normalne dla nowych aplikacji bez certyfikatu Microsoft (koszt ~$300/rok)
+   - Aplikacja jest bezpieczna - możesz zweryfikować kod źródłowy na GitHubie
+4. Aplikacja zostanie zainstalowana i automatycznie uruchomiona
 
 ### Budowanie ze źródeł
 
