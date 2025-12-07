@@ -24,10 +24,10 @@
   background: var(--btn-secondary);
   color: var(--text-primary);
   border: 1px solid var(--border-color);
-  padding: 0.5rem 1rem;
+  padding: 0.45rem 0.9rem;
   border-radius: 6px;
   cursor: pointer;
-  font-size: 0.9rem;
+  font-size: 0.81rem;
   font-weight: 600;
   transition: all 0.2s;
 }

@@ -19,6 +19,7 @@ const Debts: React.FC<DebtsProps> = ({ onBack, isAdmin = true }) => {
   
   // Add debt form
   const [showAddForm, setShowAddForm] = useState(false);
+  const [editingDebt, setEditingDebt] = useState<Debt | null>(null);
   const [newDebt, setNewDebt] = useState({
     name: '',
     total_amount: '',
@@ -80,14 +81,28 @@ const Debts: React.FC<DebtsProps> = ({ onBack, isAdmin = true }) => {
     }
 
     try {
-      await window.electronAPI.createDebt({
-        name: newDebt.name,
-        total_amount: amount,
-        paid_amount: 0,
-        creditor: newDebt.creditor || undefined,
-        date_incurred: newDebt.date_incurred,
-        due_date: newDebt.due_date || undefined
-      });
+      if (editingDebt) {
+        // Update existing debt
+        await window.electronAPI.updateDebt(editingDebt.id, {
+          name: newDebt.name,
+          total_amount: amount,
+          creditor: newDebt.creditor || undefined,
+          date_incurred: newDebt.date_incurred,
+          due_date: newDebt.due_date || undefined
+        });
+        showModal('success', 'Sukces', 'Dług został zaktualizowany');
+      } else {
+        // Create new debt
+        await window.electronAPI.createDebt({
+          name: newDebt.name,
+          total_amount: amount,
+          paid_amount: 0,
+          creditor: newDebt.creditor || undefined,
+          date_incurred: newDebt.date_incurred,
+          due_date: newDebt.due_date || undefined
+        });
+        showModal('success', 'Sukces', 'Dług został dodany');
+      }
       
       setNewDebt({
         name: '',
@@ -96,13 +111,25 @@ const Debts: React.FC<DebtsProps> = ({ onBack, isAdmin = true }) => {
         date_incurred: new Date().toISOString().split('T')[0],
         due_date: ''
       });
+      setEditingDebt(null);
       setShowAddForm(false);
       loadDebts();
-      showModal('success', 'Sukces', 'Dług został dodany');
     } catch (error) {
-      console.error('Error adding debt:', error);
-      showModal('error', 'Błąd', 'Nie udało się dodać długu');
+      console.error('Error saving debt:', error);
+      showModal('error', 'Błąd', 'Nie udało się zapisać długu');
     }
+  };
+
+  const handleEditDebt = (debt: Debt) => {
+    setEditingDebt(debt);
+    setNewDebt({
+      name: debt.name,
+      total_amount: debt.total_amount.toString(),
+      creditor: debt.creditor || '',
+      date_incurred: debt.date_incurred,
+      due_date: debt.due_date || ''
+    });
+    setShowAddForm(true);
   };
 
   const handleOpenPayment = (debt: Debt) => {
@@ -300,7 +327,7 @@ const Debts: React.FC<DebtsProps> = ({ onBack, isAdmin = true }) => {
       {/* Add Debt Form */}
       {showAddForm && (
         <div className="add-debt-form">
-          <h3>Nowy dług</h3>
+          <h3>{editingDebt ? 'Edytuj dług' : 'Nowy dług'}</h3>
           <div className="form-grid">
             <div className="form-group">
               <label>Nazwa długu *</label>
@@ -350,11 +377,21 @@ const Debts: React.FC<DebtsProps> = ({ onBack, isAdmin = true }) => {
             </div>
           </div>
           <div className="form-actions">
-            <button className="btn-secondary" onClick={() => setShowAddForm(false)}>
+            <button className="btn-secondary" onClick={() => {
+              setShowAddForm(false);
+              setEditingDebt(null);
+              setNewDebt({
+                name: '',
+                total_amount: '',
+                creditor: '',
+                date_incurred: new Date().toISOString().split('T')[0],
+                due_date: ''
+              });
+            }}>
               Anuluj
             </button>
             <button className="btn-primary" onClick={handleAddDebt}>
-              Dodaj dług
+              {editingDebt ? 'Zapisz zmiany' : 'Dodaj dług'}
             </button>
           </div>
         </div>
@@ -475,6 +512,12 @@ const Debts: React.FC<DebtsProps> = ({ onBack, isAdmin = true }) => {
                 
                 {viewMode === 'active' && isAdmin && (
                   <div className="debt-actions" onClick={(e) => e.stopPropagation()}>
+                    <button 
+                      className="btn-secondary btn-sm"
+                      onClick={() => handleEditDebt(debt)}
+                    >
+                      ✏️ Modyfikuj
+                    </button>
                     <button 
                       className="btn-success btn-sm"
                       onClick={() => handleOpenPayment(debt)}

@@ -13,9 +13,11 @@ interface MonthViewProps {
   isArchive?: boolean;
   onNavigateToDebts?: () => void;
   isAdmin?: boolean;
+  onCreateMonth?: () => void;
+  canCreateNextMonth?: boolean;
 }
 
-const MonthView: React.FC<MonthViewProps> = ({ month, onBack, onRefresh, isArchive = false, onNavigateToDebts, isAdmin = true }) => {
+const MonthView: React.FC<MonthViewProps> = ({ month, onBack, onRefresh, isArchive = false, onNavigateToDebts, isAdmin = true, onCreateMonth, canCreateNextMonth = false }) => {
   const [incomes, setIncomes] = useState<Income[]>([]);
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [settings, setSettings] = useState<Settings | null>(null);
@@ -421,6 +423,26 @@ const MonthView: React.FC<MonthViewProps> = ({ month, onBack, onRefresh, isArchi
             <span className="stat-value">
               {isArchive && <span className="archive-badge">ARCHIWUM</span>}
               <span className="month-name">{month.name}</span>
+              {!isArchive && canCreateNextMonth && isAdmin && onCreateMonth && (
+                <button 
+                  className="btn-create-next"
+                  onClick={onCreateMonth}
+                  title="Utwórz następny miesiąc"
+                  style={{
+                    marginLeft: '0.75rem',
+                    padding: '0.25rem 0.5rem',
+                    fontSize: '0.75rem',
+                    backgroundColor: 'var(--color-income)',
+                    color: 'var(--bg-primary)',
+                    border: 'none',
+                    borderRadius: '4px',
+                    cursor: 'pointer',
+                    fontWeight: 'bold'
+                  }}
+                >
+                  + Utwórz nowy
+                </button>
+              )}
             </span>
           </div>
           

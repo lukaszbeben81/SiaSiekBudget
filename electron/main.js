@@ -4,7 +4,7 @@ const Database = require('./database');
 const { getRandomJoke } = require('./jokes');
 
 // Wersja aplikacji
-const APP_VERSION = '1.0.0';
+const APP_VERSION = '1.2.0';
 const GITHUB_REPO = 'SiaSiek/SiaSiekBudget';
 
 let mainWindow;
@@ -14,6 +14,8 @@ function createWindow() {
   mainWindow = new BrowserWindow({
     width: 1400,
     height: 900,
+    fullscreen: true,
+    autoHideMenuBar: true,
     backgroundColor: '#141414',
     webPreferences: {
       nodeIntegration: false,

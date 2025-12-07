@@ -28,7 +28,6 @@ const Settings: React.FC<SettingsProps> = ({ onBack }) => {
 
   // Form state
   const [billingDay, setBillingDay] = useState(1);
-  const [savingsPercentage, setSavingsPercentage] = useState(10);
   const [weeklyGroceries, setWeeklyGroceries] = useState(500);
   const [dailyExpenses, setDailyExpenses] = useState(100);
   const [developerMode, setDeveloperMode] = useState(0);
@@ -37,7 +36,6 @@ const Settings: React.FC<SettingsProps> = ({ onBack }) => {
   // Original values for change detection
   const [originalSettings, setOriginalSettings] = useState({
     billingDay: 1,
-    savingsPercentage: 10,
     weeklyGroceries: 500,
     dailyExpenses: 100,
     developerMode: 0,
@@ -527,7 +525,6 @@ const Settings: React.FC<SettingsProps> = ({ onBack }) => {
       setUsers(usersData);
 
       setBillingDay(settingsData.billing_day);
-      setSavingsPercentage(settingsData.savings_percentage);
       setWeeklyGroceries(settingsData.weekly_groceries);
       setDailyExpenses(settingsData.daily_expenses);
       setPasswordEnabled(settingsData.password_enabled);
@@ -547,7 +544,6 @@ const Settings: React.FC<SettingsProps> = ({ onBack }) => {
       // Store original values for change detection
       setOriginalSettings({
         billingDay: settingsData.billing_day,
-        savingsPercentage: settingsData.savings_percentage,
         weeklyGroceries: settingsData.weekly_groceries,
         dailyExpenses: settingsData.daily_expenses,
         developerMode: settingsData.developer_mode || 0,
@@ -570,7 +566,6 @@ const Settings: React.FC<SettingsProps> = ({ onBack }) => {
   // Check if any settings have changed
   const hasChanges = () => {
     if (billingDay !== originalSettings.billingDay) return true;
-    if (savingsPercentage !== originalSettings.savingsPercentage) return true;
     if (weeklyGroceries !== originalSettings.weeklyGroceries) return true;
     if (dailyExpenses !== originalSettings.dailyExpenses) return true;
     if (developerMode !== originalSettings.developerMode) return true;
@@ -594,7 +589,6 @@ const Settings: React.FC<SettingsProps> = ({ onBack }) => {
     try {
       await window.electronAPI.updateSettings({
         billing_day: billingDay,
-        savings_percentage: savingsPercentage,
         weekly_groceries: weeklyGroceries,
         daily_expenses: dailyExpenses,
         password_enabled: passwordEnabled,
@@ -612,7 +606,6 @@ const Settings: React.FC<SettingsProps> = ({ onBack }) => {
       // Update original settings after successful save
       setOriginalSettings({
         billingDay,
-        savingsPercentage,
         weeklyGroceries,
         dailyExpenses,
         developerMode,
@@ -876,13 +869,6 @@ const Settings: React.FC<SettingsProps> = ({ onBack }) => {
                   {Array.from({ length: 28 }, (_, i) => i + 1).map(day => (<option key={day} value={day}>{day}</option>))}
                   <option value={29}>Ost.</option>
                 </select>
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }} title="Procent przychodów automatycznie odkładany na oszczędności (0-100%)">
-                <span style={{ color: '#888' }}>Oszczędności:</span>
-                <input type="number" value={savingsPercentage} onChange={(e) => setSavingsPercentage(Number(e.target.value))} 
-                  onFocus={clearZeroOnFocus}
-                  min="0" max="100" step="0.5" disabled={!isAdmin} style={{ padding: '0.15rem', fontSize: '0.65rem', width: '45px' }} />
-                <span>%</span>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }} title="Planowana kwota wydatków na zakupy spożywcze na tydzień (w złotówkach)">
                 <span style={{ color: '#888' }}>Zakupy tygodniowe:</span>

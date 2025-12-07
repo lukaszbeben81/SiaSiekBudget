@@ -5,6 +5,74 @@ Wszystkie istotne zmiany w projekcie SiaSiek Budget będą dokumentowane w tym p
 Format bazuje na [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 a projekt używa [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0] - 2025-12-07
+
+### ✨ Dodano
+- **Tryb pełnoekranowy** - aplikacja uruchamia się automatycznie w trybie fullscreen
+- **Ukryty pasek menu** - pasek menu (File, Edit, View, Window, Help) jest domyślnie ukryty, można go przywołać klawiszem Alt
+
+### 🔧 Naprawiono
+- **Wyświetlanie "PLN0" zamiast "PLN"** - naprawiono błąd w warunkach JSX, gdzie wartość 0 była renderowana jako tekst
+- **Nieprawidłowa nazwa miesiąca w Kroku 1** - naprawiono aby po wybraniu "grudzień 2025" w Kroku 0, również Krok 1 wyświetlał "grudzień" zamiast "listopad"
+- **Ignorowanie ustawień kolumn z katalogu wydatków** - system teraz poprawnie pobiera `column_number` z katalogu wydatków zamiast obliczać je na podstawie kategorii
+
+### 🎨 Zmiany interfejsu
+- **Przycisk "- Wydatek"** zmniejszony o 10% (padding z 0.5rem/1rem na 0.45rem/0.9rem, font-size z 0.9rem na 0.81rem)
+
+### 📝 Zmiany techniczne
+- Zmieniono warunki w JSX z `{value && value > 0 && (...)}` na `{value !== undefined && value > 0 && (...)}`
+- Dodano `fullscreen: true` i `autoHideMenuBar: true` w konfiguracji BrowserWindow
+- Priorytet pobierania `column_number`: najpierw z katalogu/poprzedniego miesiąca, potem obliczenie z kategorii jako fallback
+
+## [1.1.0] - 2025-12-07
+
+### ✨ Dodano
+- **Wybór miesiąca przy tworzeniu** - nowy Krok 0 pozwala wybrać który miesiąc utworzyć (bieżący, poprzedni lub własny okres)
+- **Zabezpieczenie przed duplikatami** - system sprawdza czy miesiąc o danym okresie już istnieje
+- **Przycisk "Utwórz nowy"** w topbarze aktualnego miesiąca - szybki dostęp do tworzenia następnego okresu
+- **Opcja własnego okresu** - możliwość ręcznego określenia dat i nazwy miesiąca
+- **Opcja "do kiedy"** w formularzu wydatków stałych - możliwość ustawienia daty końcowej wystąpienia wydatku
+- **Funkcja modyfikacji** w Kroku 2 tworzenia miesiąca - teraz przycisk "Modyfikuj" prawidłowo edytuje wydatek zamiast go usuwać
+- **Opcja modyfikacji długu** na stronie Długi - możliwość edycji wszystkich danych istniejącego długu
+
+### 🔧 Naprawiono
+- Przycisk "Modyfikuj" w Kroku 2 tworzenia miesiąca działał jak "Usuń" - naprawiono logikę edycji
+- **Błąd obliczania dat okresów** - naprawiono algorytm obliczania dat końcowych okresów rozliczeniowych
+- **Nieprawidłowe nazwy miesięcy** - system teraz poprawnie rozpoznaje bieżący miesiąc (np. 7 grudnia = okres "grudzień 2025")
+- Predefiniowany podział wydatków na 3 kolumny nie działał przy tworzeniu miesiąca - wydatki są teraz automatycznie przypisywane do odpowiednich kolumn na podstawie kategorii z ustawień
+- Wydatki z poprzedniego miesiąca nie zachowywały informacji o kolumnach - teraz są poprawnie przenoszone
+- **Opóźnienie przy przełączaniu na "Własny okres"** - zoptymalizowano obsługę zmiany opcji
+- Formularze dat na stronie Długi już używają kalendarza (type="date") zamiast ręcznego wprowadzania
+
+### 🗑️ Usunięto
+- **Pole procentowe oszczędności** z ustawień (było nieużywane)
+- **Opcja "Co rok"** z formularza wydatków - pozostawiono tylko "Co miesiąc" i "Inne..." z wyborem miesięcy
+
+### 📝 Zmiany
+- Proces tworzenia miesiąca rozpoczyna się teraz od wyboru okresu (Krok 0)
+- Wydatki ładowane z poprzedniego miesiąca zachowują teraz informację o przypisaniu do kolumn
+- Wydatki bez przypisanej kolumny są automatycznie przypisywane na podstawie kategorii
+- Formularz wydatków zawiera teraz checkbox "Wydatek bez daty końcowej" oraz pole daty końcowej
+- Nie można wrócić do kroku wyboru miesiąca po załadowaniu danych (zapobiega pomyłkom)
+
+### 💡 Logika działania wyboru miesiąca
+- System sprawdza dzień rozliczeniowy z ustawień (np. 10)
+- Na podstawie dzisiejszej daty określa bieżący okres:
+  - Jeśli dziś jest 7 grudnia i billing_day=10 → bieżący: **grudzień 2025** (10.12 - 09.01)
+  - Jeśli dziś jest 12 grudnia i billing_day=10 → bieżący: **grudzień 2025** (10.12 - 09.01)
+  - Jeśli dziś jest 8 grudnia i billing_day=10 → bieżący: **listopad 2025** (10.11 - 09.12)
+- Pozwala utworzyć poprzedni miesiąc jeśli nie istnieje
+- Pozwala utworzyć bieżący miesiąc jeśli nie istnieje
+- Blokuje tworzenie już istniejących miesięcy
+- Umożliwia utworzenie własnego okresu z dowolnymi datami (z kalendarzem)
+- **Kalendarze dla dat** - pola "Data początkowa" i "Data końcowa" używają natywnego selektora dat
+
+### ⚠️ Uwaga dla użytkowników
+- Po aktualizacji wszystkie dane pozostaną nienaruszone
+- Nowe funkcje będą dostępne natychmiast po aktualizacji
+- Usuniętych pól nie trzeba już wypełniać
+- Przy tworzeniu nowego miesiąca najpierw wybierz okres w Kroku 0
+
 ## [1.0.0] - 2025-12-06
 
 ### ✨ Dodano

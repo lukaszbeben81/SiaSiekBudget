@@ -3,13 +3,13 @@
 ## Plik instalacyjny
 
 **Nazwa pliku:** SiaSiek Budget Setup 1.0.0.exe  
-**Rozmiar:** 90.78 MB  
-**Data utworzenia:** 2025-12-06
+**Rozmiar:** 165.38 MB  
+**Data utworzenia:** 2025-12-06 12:24:40
 
 ## SHA-256 Checksum
 
 ```
-0AABD02BD642345F8E09F7D3F48C65D5E2DBF195D478D013CFB3790F02EABD90
+72CC743C03B095036B4DDF7A396B23729B43D5BD198527B8A8040594D3F5FA46
 ```
 
 ## Weryfikacja checksumu

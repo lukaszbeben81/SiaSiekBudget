@@ -176,6 +176,8 @@ const Dashboard: React.FC = () => {
         onRefresh={loadMonths}
         onNavigateToDebts={() => setView('debts')}
         isAdmin={isAdmin}
+        onCreateMonth={handleCreateMonth}
+        canCreateNextMonth={true}
       />
     );
   }

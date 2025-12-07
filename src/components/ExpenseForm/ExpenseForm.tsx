@@ -19,8 +19,10 @@ export interface ExpenseFormData {
   amount: number;
   isFixed: boolean;
   columnNumber?: number;
-  repeatType?: 'monthly' | 'yearly' | 'custom';
+  repeatType?: 'monthly' | 'custom';
   repeatMonths?: number[];
+  endDate?: string;
+  hasEndDate?: boolean;
 }
 
 const MONTH_NAMES = [
@@ -47,8 +49,10 @@ const ExpenseForm: React.FC<ExpenseFormProps> = ({ isOpen, onClose, onSave, mont
   const [amount, setAmount] = useState('');
   const [isFixed, setIsFixed] = useState(defaultIsFixed);
   const [columnNumber, setColumnNumber] = useState(1);
-  const [repeatType, setRepeatType] = useState<'monthly' | 'yearly' | 'custom'>('monthly');
+  const [repeatType, setRepeatType] = useState<'monthly' | 'custom'>('monthly');
   const [repeatMonths, setRepeatMonths] = useState<number[]>([]);
+  const [hasEndDate, setHasEndDate] = useState(false);
+  const [endDate, setEndDate] = useState('');
   const [categories, setCategories] = useState<string[]>([]);
   const [showNewCategory, setShowNewCategory] = useState(false);
   const [newCategory, setNewCategory] = useState('');
@@ -67,6 +71,8 @@ const ExpenseForm: React.FC<ExpenseFormProps> = ({ isOpen, onClose, onSave, mont
         setColumnNumber(initialData.columnNumber || 1);
         setRepeatType(initialData.repeatType || 'monthly');
         setRepeatMonths(initialData.repeatMonths || []);
+        setHasEndDate(initialData.hasEndDate || false);
+        setEndDate(initialData.endDate || '');
       } else {
         setName('');
         setCategory('');
@@ -75,6 +81,8 @@ const ExpenseForm: React.FC<ExpenseFormProps> = ({ isOpen, onClose, onSave, mont
         setColumnNumber(1);
         setRepeatType('monthly');
         setRepeatMonths([]);
+        setHasEndDate(false);
+        setEndDate('');
         setShowNewCategory(false);
         setNewCategory('');
       }
@@ -116,7 +124,7 @@ const ExpenseForm: React.FC<ExpenseFormProps> = ({ isOpen, onClose, onSave, mont
     setIsFixed(Math.random() > 0.3);
     
     if (isFixed) {
-      const repeatTypes: ('monthly' | 'yearly' | 'custom')[] = ['monthly', 'yearly', 'custom'];
+      const repeatTypes: ('monthly' | 'custom')[] = ['monthly', 'custom'];
       const randomRepeatType = repeatTypes[Math.floor(Math.random() * repeatTypes.length)];
       setRepeatType(randomRepeatType);
       
@@ -235,7 +243,9 @@ const ExpenseForm: React.FC<ExpenseFormProps> = ({ isOpen, onClose, onSave, mont
       isFixed: isFixed,
       columnNumber: columnNumber,
       ...(isFixed && { repeatType }),
-      ...(isFixed && repeatType === 'custom' && { repeatMonths })
+      ...(isFixed && repeatType === 'custom' && { repeatMonths }),
+      ...(isFixed && { hasEndDate }),
+      ...(isFixed && hasEndDate && endDate && { endDate })
     };
 
     if (monthId && showSaveQuestion) {
@@ -459,10 +469,9 @@ const ExpenseForm: React.FC<ExpenseFormProps> = ({ isOpen, onClose, onSave, mont
                 <select
                   id="repeat-type"
                   value={repeatType}
-                  onChange={(e) => setRepeatType(e.target.value as 'monthly' | 'yearly' | 'custom')}
+                  onChange={(e) => setRepeatType(e.target.value as 'monthly' | 'custom')}
                 >
                   <option value="monthly">Co miesiąc</option>
-                  <option value="yearly">Co rok</option>
                   <option value="custom">Inne...</option>
                 </select>
               </div>
@@ -475,10 +484,9 @@ const ExpenseForm: React.FC<ExpenseFormProps> = ({ isOpen, onClose, onSave, mont
               <select
                 id="repeat-type"
                 value={repeatType}
-                onChange={(e) => setRepeatType(e.target.value as 'monthly' | 'yearly' | 'custom')}
+                onChange={(e) => setRepeatType(e.target.value as 'monthly' | 'custom')}
               >
                 <option value="monthly">Co miesiąc</option>
-                <option value="yearly">Co rok</option>
                 <option value="custom">Inne...</option>
               </select>
             </div>
@@ -496,6 +504,31 @@ const ExpenseForm: React.FC<ExpenseFormProps> = ({ isOpen, onClose, onSave, mont
               <option value={3}>Kolumna 3 - Prawa</option>
             </select>
           </div>
+
+          {isFixed && (
+            <div className="form-field">
+              <label className="checkbox-label">
+                <input
+                  type="checkbox"
+                  checked={!hasEndDate}
+                  onChange={(e) => setHasEndDate(!e.target.checked)}
+                />
+                <span>Wydatek bez daty końcowej</span>
+              </label>
+            </div>
+          )}
+
+          {isFixed && hasEndDate && (
+            <div className="form-field">
+              <label htmlFor="end-date">Data ostatniego wystąpienia</label>
+              <input
+                id="end-date"
+                type="date"
+                value={endDate}
+                onChange={(e) => setEndDate(e.target.value)}
+              />
+            </div>
+          )}
 
           {isFixed && repeatType === 'custom' && (
             <div className="form-field">

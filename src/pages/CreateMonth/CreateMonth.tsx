@@ -35,7 +35,7 @@ interface ExpenseItem {
 }
 
 const CreateMonth: React.FC<CreateMonthProps> = ({ onBack, onMonthCreated }) => {
-  const [step, setStep] = useState(1);
+  const [step, setStep] = useState(0); // Changed from 1 to 0 for month selection
   const [loading, setLoading] = useState(true);
   
   // Modal
@@ -43,6 +43,11 @@ const CreateMonth: React.FC<CreateMonthProps> = ({ onBack, onMonthCreated }) => 
   const [modalType, setModalType] = useState<'info' | 'success' | 'error' | 'warning'>('info');
   const [modalTitle, setModalTitle] = useState('');
   const [modalMessage, setModalMessage] = useState('');
+
+  // Month selection (Step 0)
+  const [availableMonths, setAvailableMonths] = useState<{value: string; label: string; startDate: string; endDate: string}[]>([]);
+  const [selectedMonthOption, setSelectedMonthOption] = useState<string>('');
+  const [customDates, setCustomDates] = useState(false);
 
   // Month data
   const [monthName, setMonthName] = useState('');
@@ -63,6 +68,7 @@ const CreateMonth: React.FC<CreateMonthProps> = ({ onBack, onMonthCreated }) => 
   // Step 2: Fixed expenses
   const [expenses, setExpenses] = useState<ExpenseItem[]>([]);
   const [showAddExpense, setShowAddExpense] = useState(false);
+  const [editingExpenseIndex, setEditingExpenseIndex] = useState<number | null>(null);
   const [newExpense, setNewExpense] = useState<ExpenseItem>({
     name: '',
     category: '',
@@ -92,35 +98,97 @@ const CreateMonth: React.FC<CreateMonthProps> = ({ onBack, onMonthCreated }) => 
     try {
       const settings = await window.electronAPI.getSettings();
       const billingDay = settings.billing_day;
+      const existingMonths = await window.electronAPI.getMonths();
       
-      // Calculate month dates based on billing day
-      // If billing_day = 10 and today is Dec 4, we're in "November" period (Nov 10 - Dec 9)
+      // Calculate available month options
       const today = new Date();
-      let monthStart: Date;
+      const options: {value: string; label: string; startDate: string; endDate: string}[] = [];
       
+      // Calculate current period
+      let currentPeriodStart: Date;
       if (today.getDate() >= billingDay) {
-        // We're past the billing day, so period started this month
-        // e.g., Dec 15 with billing_day=10 → period is "December" (Dec 10 - Jan 9)
-        monthStart = new Date(today.getFullYear(), today.getMonth(), billingDay);
+        // We're past billing day, so current period started this month
+        currentPeriodStart = new Date(today.getFullYear(), today.getMonth(), billingDay);
       } else {
-        // We're before the billing day, so period started last month
-        // e.g., Dec 4 with billing_day=10 → period is "November" (Nov 10 - Dec 9)
-        monthStart = new Date(today.getFullYear(), today.getMonth() - 1, billingDay);
+        // We're before billing day, so current period started last month
+        currentPeriodStart = new Date(today.getFullYear(), today.getMonth() - 1, billingDay);
       }
       
-      const monthEnd = new Date(monthStart);
-      monthEnd.setMonth(monthEnd.getMonth() + 1);
-      monthEnd.setDate(billingDay - 1);
-
-      const startDateStr = format(monthStart, 'yyyy-MM-dd');
-      const endDateStr = format(monthEnd, 'yyyy-MM-dd');
+      // Calculate end date: one day before next billing day
+      const currentPeriodEnd = new Date(currentPeriodStart.getFullYear(), currentPeriodStart.getMonth() + 1, billingDay - 1);
       
-      setStartDate(startDateStr);
-      setEndDate(endDateStr);
-      setMonthName(format(monthStart, 'LLLL yyyy', { locale: pl }));
-
-      // Load previous month data with settings for weekly groceries calculation
-      await loadPreviousMonthData(startDateStr, endDateStr, settings);
+      const currentPeriodStartStr = format(currentPeriodStart, 'yyyy-MM-dd');
+      const currentPeriodEndStr = format(currentPeriodEnd, 'yyyy-MM-dd');
+      // Use today's month for the name (not period start), as users think of it by current calendar month
+      const currentMonthName = format(today, 'LLLL yyyy', { locale: pl });
+      
+      // Check if current period exists
+      const currentExists = existingMonths.some(m => 
+        m.start_date === currentPeriodStartStr && m.end_date === currentPeriodEndStr
+      );
+      
+      if (!currentExists) {
+        options.push({
+          value: 'current',
+          label: `${currentMonthName} (bieżący)`,
+          startDate: currentPeriodStartStr,
+          endDate: currentPeriodEndStr
+        });
+      }
+      
+      // Calculate previous period
+      const previousPeriodStart = new Date(currentPeriodStart.getFullYear(), currentPeriodStart.getMonth() - 1, billingDay);
+      
+      // Calculate end date for previous period
+      const previousPeriodEnd = new Date(previousPeriodStart.getFullYear(), previousPeriodStart.getMonth() + 1, billingDay - 1);
+      
+      const previousPeriodStartStr = format(previousPeriodStart, 'yyyy-MM-dd');
+      const previousPeriodEndStr = format(previousPeriodEnd, 'yyyy-MM-dd');
+      // Use the calendar month before today for the name
+      const previousCalendarMonth = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+      const previousMonthName = format(previousCalendarMonth, 'LLLL yyyy', { locale: pl });
+      
+      // Check if previous period exists
+      const previousExists = existingMonths.some(m => 
+        m.start_date === previousPeriodStartStr && m.end_date === previousPeriodEndStr
+      );
+      
+      if (!previousExists) {
+        options.push({
+          value: 'previous',
+          label: previousMonthName,
+          startDate: previousPeriodStartStr,
+          endDate: previousPeriodEndStr
+        });
+      }
+      
+      // Add custom option
+      options.push({
+        value: 'custom',
+        label: 'Własny okres...',
+        startDate: currentPeriodStartStr,
+        endDate: currentPeriodEndStr
+      });
+      
+      setAvailableMonths(options);
+      
+      // Auto-select first available option (not custom)
+      const firstNonCustomOption = options.find(o => o.value !== 'custom');
+      if (firstNonCustomOption) {
+        setSelectedMonthOption(firstNonCustomOption.value);
+        setStartDate(firstNonCustomOption.startDate);
+        setEndDate(firstNonCustomOption.endDate);
+        // Extract month name from the label (already formatted correctly)
+        const labelParts = firstNonCustomOption.label.split(' (');
+        setMonthName(labelParts[0]);
+      } else {
+        // Only custom option available
+        setSelectedMonthOption('custom');
+        setCustomDates(true);
+        setStartDate(currentPeriodStartStr);
+        setEndDate(currentPeriodEndStr);
+        setMonthName(currentMonthName);
+      }
       
       setLoading(false);
     } catch (error) {
@@ -130,11 +198,79 @@ const CreateMonth: React.FC<CreateMonthProps> = ({ onBack, onMonthCreated }) => 
     }
   };
 
+  const handleMonthSelection = async () => {
+    if (!selectedMonthOption) {
+      showModal('warning', 'Uwaga', 'Wybierz miesiąc do utworzenia');
+      return;
+    }
+    
+    if (selectedMonthOption === 'custom' && (!startDate || !endDate)) {
+      showModal('warning', 'Uwaga', 'Wprowadź daty okresu rozliczeniowego');
+      return;
+    }
+    
+    // Check for duplicates
+    try {
+      const existingMonths = await window.electronAPI.getMonths();
+      const duplicate = existingMonths.find(m => 
+        m.start_date === startDate && m.end_date === endDate
+      );
+      
+      if (duplicate) {
+        showModal('error', 'Błąd', `Miesiąc ${duplicate.name} z tym okresem już istnieje!`);
+        return;
+      }
+      
+      // Load data for selected period
+      setLoading(true);
+      const settings = await window.electronAPI.getSettings();
+      await loadPreviousMonthData(startDate, endDate, settings);
+      setLoading(false);
+      setStep(1); // Move to income step
+    } catch (error) {
+      console.error('Error loading month data:', error);
+      showModal('error', 'Błąd', 'Nie udało się załadować danych miesiąca');
+      setLoading(false);
+    }
+  };
+
+  const handleMonthOptionChange = (value: string) => {
+    setSelectedMonthOption(value);
+    
+    if (value === 'custom') {
+      setCustomDates(true);
+      // Don't change dates when switching to custom - keep current values
+    } else {
+      setCustomDates(false);
+      const option = availableMonths.find(m => m.value === value);
+      if (option) {
+        setStartDate(option.startDate);
+        setEndDate(option.endDate);
+        // Use cached label instead of recalculating
+        const labelParts = option.label.split(' (');
+        setMonthName(labelParts[0]);
+      }
+    }
+  };
+
   const loadPreviousMonthData = async (periodStartDate: string, periodEndDate: string, settings: Settings) => {
     try {
       // Calculate weekly groceries expense
       const saturdays = getSaturdaysInPeriod(periodStartDate, periodEndDate);
       const weeklyGroceriesAmount = saturdays * (settings.weekly_groceries || 0);
+      
+      // Get column categories from settings
+      const column1Categories = (settings.column1_categories || 'Mieszkanie,Media').split(',').map(c => c.trim());
+      const column2Categories = (settings.column2_categories || 'Transport,Żywność').split(',').map(c => c.trim());
+      const column3Categories = (settings.column3_categories || 'Rozrywka,Zdrowie,Inne').split(',').map(c => c.trim());
+      
+      // Helper function to get column number based on category
+      const getColumnNumber = (category: string): number => {
+        if (column1Categories.includes(category)) return 1;
+        if (column2Categories.includes(category)) return 2;
+        if (column3Categories.includes(category)) return 3;
+        return 1; // Default to column 1
+      };
       
       // Create the locked weekly groceries expense
       const weeklyGroceriesExpense: ExpenseItem = {
@@ -143,7 +279,8 @@ const CreateMonth: React.FC<CreateMonthProps> = ({ onBack, onMonthCreated }) => 
         totalAmount: weeklyGroceriesAmount,
         paidAmount: 0,
         isFixed: true,
-        isLocked: true
+        isLocked: true,
+        columnNumber: getColumnNumber('Żywność')
       };
       
       // Load debts with due date in this period and add as locked expenses
@@ -161,7 +298,8 @@ const CreateMonth: React.FC<CreateMonthProps> = ({ onBack, onMonthCreated }) => 
           totalAmount: d.total_amount - d.paid_amount,
           paidAmount: 0,
           isFixed: true,
-          isLocked: true
+          isLocked: true,
+          columnNumber: getColumnNumber('Długi')
         }));
       
       // Load active piggybanks and add as locked expenses (replaces savings from settings)
@@ -174,7 +312,8 @@ const CreateMonth: React.FC<CreateMonthProps> = ({ onBack, onMonthCreated }) => 
           totalAmount: p.monthly_amount,
           paidAmount: 0,
           isFixed: true,
-          isLocked: true
+          isLocked: true,
+          columnNumber: getColumnNumber('Skarbonka')
         }));
       
       const months = await window.electronAPI.getMonths();
@@ -188,7 +327,9 @@ const CreateMonth: React.FC<CreateMonthProps> = ({ onBack, onMonthCreated }) => 
             category: fe.category || '',
             totalAmount: fe.default_amount,
             paidAmount: 0,
-            isFixed: true
+            isFixed: true,
+            // Use column_number from catalog, fallback to category-based assignment
+            columnNumber: fe.column_number || getColumnNumber(fe.category || '')
           }));
         // Add weekly groceries, piggybanks and debt expenses as first expenses
         setExpenses([weeklyGroceriesExpense, ...piggybankExpenses, ...debtExpenses, ...expenseItems]);
@@ -218,7 +359,8 @@ const CreateMonth: React.FC<CreateMonthProps> = ({ onBack, onMonthCreated }) => 
           category: exp.category || '',
           totalAmount: exp.total_amount,
           paidAmount: 0,
-          isFixed: true
+          isFixed: true,
+          columnNumber: exp.column_number || getColumnNumber(exp.category || '')
         }));
 
       // Check for expenses from same month last year
@@ -240,7 +382,8 @@ const CreateMonth: React.FC<CreateMonthProps> = ({ onBack, onMonthCreated }) => 
               category: exp.category || '',
               totalAmount: exp.total_amount,
               paidAmount: 0,
-              isFixed: true
+              isFixed: true,
+              columnNumber: exp.column_number || getColumnNumber(exp.category || '')
             });
           }
         });
@@ -354,9 +497,26 @@ const CreateMonth: React.FC<CreateMonthProps> = ({ onBack, onMonthCreated }) => 
       showModal('warning', 'Uwaga', 'Wypełnij wszystkie pola wydatku');
       return;
     }
-    setExpenses([...expenses, { ...newExpense }]);
+    
+    if (editingExpenseIndex !== null) {
+      // Update existing expense
+      const updated = [...expenses];
+      updated[editingExpenseIndex] = { ...newExpense };
+      setExpenses(updated);
+      setEditingExpenseIndex(null);
+    } else {
+      // Add new expense
+      setExpenses([...expenses, { ...newExpense }]);
+    }
+    
     setNewExpense({ name: '', category: '', totalAmount: 0, paidAmount: 0, isFixed: true, columnNumber: 1 });
     setShowAddExpense(false);
+  };
+
+  const handleEditExpense = (index: number) => {
+    setNewExpense(expenses[index]);
+    setEditingExpenseIndex(index);
+    setShowAddExpense(true);
   };
 
   const handleRemoveExpense = (index: number) => {
@@ -438,6 +598,10 @@ const CreateMonth: React.FC<CreateMonthProps> = ({ onBack, onMonthCreated }) => 
   };
 
   const nextStep = () => {
+    if (step === 0) {
+      handleMonthSelection();
+      return;
+    }
     if (step === 1 && incomes.length === 0) {
       showModal('warning', 'Uwaga', 'Dodaj przynajmniej jeden dochód');
       return;
@@ -450,7 +614,10 @@ const CreateMonth: React.FC<CreateMonthProps> = ({ onBack, onMonthCreated }) => 
   };
 
   const prevStep = () => {
-    setStep(step - 1);
+    // Don't allow going back to step 0 (month selection) after data is loaded
+    if (step > 1) {
+      setStep(step - 1);
+    }
   };
 
   if (loading) {
@@ -481,19 +648,121 @@ const CreateMonth: React.FC<CreateMonthProps> = ({ onBack, onMonthCreated }) => 
 
       {/* Combined Progress + Month Info Banner */}
       <div className="create-month-banner">
-        <div className="progress-steps">
-          <div className={`step ${step >= 1 ? 'active' : ''} ${step === 1 ? 'current' : ''}`}>1</div>
-          <div className={`step ${step >= 2 ? 'active' : ''} ${step === 2 ? 'current' : ''}`}>2</div>
-          <div className={`step ${step >= 3 ? 'active' : ''} ${step === 3 ? 'current' : ''}`}>3</div>
-          <div className={`step ${step >= 4 ? 'active' : ''} ${step === 4 ? 'current' : ''}`}>4</div>
-        </div>
-        <div className="month-info">
-          <span className="month-name">{monthName}</span>
-          <span className="month-period">Okres: {startDate} - {endDate}</span>
-        </div>
+        {step > 0 && (
+          <>
+            <div className="progress-steps">
+              <div className={`step ${step >= 1 ? 'active' : ''} ${step === 1 ? 'current' : ''}`}>1</div>
+              <div className={`step ${step >= 2 ? 'active' : ''} ${step === 2 ? 'current' : ''}`}>2</div>
+              <div className={`step ${step >= 3 ? 'active' : ''} ${step === 3 ? 'current' : ''}`}>3</div>
+              <div className={`step ${step >= 4 ? 'active' : ''} ${step === 4 ? 'current' : ''}`}>4</div>
+            </div>
+            <div className="month-info">
+              <span className="month-name">{monthName}</span>
+              <span className="month-period">Okres: {startDate} - {endDate}</span>
+            </div>
+          </>
+        )}
       </div>
 
       <div className="create-month-content">
+
+        {/* STEP 0: MONTH SELECTION */}
+        {step === 0 && (
+          <div className="step-content fade-in">
+            <h2>Wybierz miesiąc do utworzenia</h2>
+            <p className="text-secondary mb-2">
+              Wybierz który miesiąc chcesz utworzyć na podstawie okresu rozliczeniowego.
+            </p>
+
+            {availableMonths.length > 1 ? (
+              <div className="form-field" style={{ marginBottom: '1.5rem' }}>
+                <label>Dostępne opcje:</label>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                  {availableMonths.map((option) => (
+                    <label 
+                      key={option.value} 
+                      className="radio-label" 
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        padding: '0.75rem',
+                        border: '2px solid',
+                        borderColor: selectedMonthOption === option.value ? 'var(--primary)' : 'var(--border)',
+                        borderRadius: '8px',
+                        cursor: 'pointer',
+                        backgroundColor: selectedMonthOption === option.value ? 'rgba(234, 179, 8, 0.1)' : 'transparent'
+                      }}
+                    >
+                      <input
+                        type="radio"
+                        name="monthOption"
+                        value={option.value}
+                        checked={selectedMonthOption === option.value}
+                        onChange={(e) => handleMonthOptionChange(e.target.value)}
+                        style={{ marginRight: '0.75rem' }}
+                      />
+                      <div>
+                        <strong>{option.label}</strong>
+                        {option.value !== 'custom' && (
+                          <div style={{ fontSize: '0.85em', color: 'var(--text-secondary)' }}>
+                            {option.startDate} - {option.endDate}
+                          </div>
+                        )}
+                      </div>
+                    </label>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <div className="alert alert-info">
+                Wszystkie standardowe miesiące zostały już utworzone. Możesz utworzyć własny okres.
+              </div>
+            )}
+
+            {(customDates || selectedMonthOption === 'custom') && (
+              <div className="custom-dates-form">
+                <h3>Własny okres rozliczeniowy</h3>
+                <div className="form-row">
+                  <div className="form-group">
+                    <label>Data początkowa</label>
+                    <input
+                      type="date"
+                      value={startDate}
+                      onChange={(e) => {
+                        setStartDate(e.target.value);
+                        const monthStart = new Date(e.target.value);
+                        setMonthName(format(monthStart, 'LLLL yyyy', { locale: pl }));
+                      }}
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label>Data końcowa</label>
+                    <input
+                      type="date"
+                      value={endDate}
+                      onChange={(e) => setEndDate(e.target.value)}
+                    />
+                  </div>
+                </div>
+                <div className="form-group">
+                  <label>Nazwa miesiąca</label>
+                  <input
+                    type="text"
+                    value={monthName}
+                    onChange={(e) => setMonthName(e.target.value)}
+                    placeholder="np. Grudzień 2025"
+                  />
+                </div>
+              </div>
+            )}
+
+            <div className="step-navigation">
+              <button className="btn-primary" onClick={nextStep}>
+                Dalej →
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* STEP 1: INCOMES */}
         {step === 1 && (
@@ -513,7 +782,7 @@ const CreateMonth: React.FC<CreateMonthProps> = ({ onBack, onMonthCreated }) => 
                     </div>
                     <div className="item-amount">
                       {income.amount.toFixed(2)} PLN
-                      {income.taxContribution && income.taxContribution > 0 && (
+                      {income.taxContribution !== undefined && income.taxContribution > 0 && (
                         <small>(Podatek: {income.taxContribution.toFixed(2)})</small>
                       )}
                     </div>
@@ -686,11 +955,7 @@ const CreateMonth: React.FC<CreateMonthProps> = ({ onBack, onMonthCreated }) => 
                     <div className="item-actions">
                       <button
                         className="btn-secondary btn-xs"
-                        onClick={() => {
-                          setNewExpense(expense);
-                          setShowAddExpense(true);
-                          handleRemoveExpense(index);
-                        }}
+                        onClick={() => handleEditExpense(index)}
                       >
                         Modyfikuj
                       </button>
@@ -717,7 +982,7 @@ const CreateMonth: React.FC<CreateMonthProps> = ({ onBack, onMonthCreated }) => 
 
             {showAddExpense && (
               <div className="add-item-form compact">
-                <h3>Nowy wydatek stały</h3>
+                <h3>{editingExpenseIndex !== null ? 'Edytuj wydatek stały' : 'Nowy wydatek stały'}</h3>
                 <div className="form-row">
                   <div className="form-group">
                     <label>Nazwa wydatku</label>
@@ -768,6 +1033,7 @@ const CreateMonth: React.FC<CreateMonthProps> = ({ onBack, onMonthCreated }) => 
                     className="btn-secondary btn-sm"
                     onClick={() => {
                       setShowAddExpense(false);
+                      setEditingExpenseIndex(null);
                       setNewExpense({ name: '', category: '', totalAmount: 0, paidAmount: 0, isFixed: true, columnNumber: 1 });
                     }}
                   >
@@ -778,7 +1044,7 @@ const CreateMonth: React.FC<CreateMonthProps> = ({ onBack, onMonthCreated }) => 
                     className="btn-primary btn-sm"
                     onClick={handleAddExpense}
                   >
-                    Dodaj wydatek
+                    {editingExpenseIndex !== null ? 'Zapisz zmiany' : 'Dodaj wydatek'}
                   </button>
                 </div>
               </div>
@@ -885,7 +1151,7 @@ const CreateMonth: React.FC<CreateMonthProps> = ({ onBack, onMonthCreated }) => 
                       <div className="summary-item-name">{income.name}</div>
                       <div className="summary-item-amount text-success">
                         {income.amount.toFixed(2)} PLN
-                        {income.taxContribution && income.taxContribution > 0 && (
+                        {income.taxContribution !== undefined && income.taxContribution > 0 && (
                           <small style={{ display: 'block', fontSize: '0.75em', color: 'var(--text-secondary)' }}>
                             Podatek: {income.taxContribution.toFixed(2)} PLN
                           </small>
