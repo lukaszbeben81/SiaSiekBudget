@@ -1,4 +1,5 @@
 const { app, BrowserWindow, ipcMain } = require('electron');
+const { autoUpdater } = require('electron-updater');
 const path = require('path');
 const Database = require('./database');
 const { getRandomJoke } = require('./jokes');
@@ -6,6 +7,10 @@ const { getRandomJoke } = require('./jokes');
 // Wersja aplikacji
 const APP_VERSION = '1.2.1';
 const GITHUB_REPO = 'lukaszbeben81/SiaSiekBudget';
+
+// Konfiguracja auto-updater
+autoUpdater.autoDownload = false; // Nie pobieraj automatycznie
+autoUpdater.autoInstallOnAppQuit = true; // Zainstaluj przy zamykaniu
 
 let mainWindow;
 let db;
@@ -55,6 +60,13 @@ app.whenReady().then(() => {
   console.log('Developer mode disabled on startup');
   
   createWindow();
+  
+  // Sprawdź aktualizacje po uruchomieniu (tylko w produkcji)
+  if (app.isPackaged) {
+    setTimeout(() => {
+      autoUpdater.checkForUpdates();
+    }, 3000); // Opóźnienie 3 sekundy po starcie
+  }
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) {
@@ -372,56 +384,84 @@ ipcMain.handle('app:getVersion', async () => {
 
 // Check for updates from GitHub
 ipcMain.handle('app:checkForUpdates', async () => {
-  const https = require('https');
-  
-  return new Promise((resolve) => {
-    const options = {
-      hostname: 'api.github.com',
-      path: `/repos/${GITHUB_REPO}/releases/latest`,
-      method: 'GET',
-      headers: { 
-        'Accept': 'application/vnd.github.v3+json',
-        'User-Agent': 'SiaSiekBudget-App'
-      }
-    };
-    
-    const req = https.request(options, (res) => {
-      let data = '';
-      res.on('data', (chunk) => data += chunk);
-      res.on('end', () => {
-        try {
-          const json = JSON.parse(data);
-          if (json.tag_name) {
-            const latestVersion = json.tag_name.replace('v', '');
-            const hasUpdate = compareVersions(latestVersion, APP_VERSION) > 0;
-            resolve({ 
-              success: true, 
-              currentVersion: APP_VERSION,
-              latestVersion,
-              hasUpdate,
-              releaseUrl: json.html_url,
-              releaseNotes: json.body || 'Brak opisu'
-            });
-          } else {
-            resolve({ success: false, error: 'Brak wydań', currentVersion: APP_VERSION });
-          }
-        } catch (e) {
-          resolve({ success: false, error: 'Parse error', currentVersion: APP_VERSION });
-        }
-      });
+  try {
+    const result = await autoUpdater.checkForUpdates();
+    if (result && result.updateInfo) {
+      const latestVersion = result.updateInfo.version;
+      const hasUpdate = compareVersions(latestVersion, APP_VERSION) > 0;
+      
+      return {
+        success: true,
+        currentVersion: APP_VERSION,
+        latestVersion,
+        hasUpdate,
+        downloadUrl: result.updateInfo.files[0]?.url || '',
+        releaseNotes: result.updateInfo.releaseNotes || 'Brak opisu'
+      };
+    }
+    return { success: false, error: 'Brak informacji o aktualizacji', currentVersion: APP_VERSION };
+  } catch (error) {
+    console.error('Błąd sprawdzania aktualizacji:', error);
+    return { success: false, error: error.message, currentVersion: APP_VERSION };
+  }
+});
+
+// Pobierz i zainstaluj aktualizację
+ipcMain.handle('app:downloadUpdate', async () => {
+  try {
+    await autoUpdater.downloadUpdate();
+    return { success: true };
+  } catch (error) {
+    console.error('Błąd pobierania aktualizacji:', error);
+    return { success: false, error: error.message };
+  }
+});
+
+// Zainstaluj pobraną aktualizację
+ipcMain.handle('app:installUpdate', () => {
+  autoUpdater.quitAndInstall(false, true);
+  return { success: true };
+});
+
+// Auto-updater event handlers
+autoUpdater.on('checking-for-update', () => {
+  console.log('Sprawdzanie aktualizacji...');
+});
+
+autoUpdater.on('update-available', (info) => {
+  console.log('Dostępna aktualizacja:', info.version);
+  if (mainWindow) {
+    mainWindow.webContents.send('update-available', {
+      version: info.version,
+      releaseNotes: info.releaseNotes
     });
-    
-    req.on('error', (e) => {
-      resolve({ success: false, error: e.message, currentVersion: APP_VERSION });
+  }
+});
+
+autoUpdater.on('update-not-available', () => {
+  console.log('Brak dostępnych aktualizacji');
+});
+
+autoUpdater.on('download-progress', (progressObj) => {
+  console.log(`Pobieranie: ${progressObj.percent.toFixed(2)}%`);
+  if (mainWindow) {
+    mainWindow.webContents.send('download-progress', {
+      percent: progressObj.percent,
+      transferred: progressObj.transferred,
+      total: progressObj.total
     });
-    
-    req.setTimeout(10000, () => {
-      req.destroy();
-      resolve({ success: false, error: 'Timeout', currentVersion: APP_VERSION });
-    });
-    
-    req.end();
-  });
+  }
+});
+
+autoUpdater.on('update-downloaded', () => {
+  console.log('Aktualizacja pobrana - gotowa do instalacji');
+  if (mainWindow) {
+    mainWindow.webContents.send('update-downloaded');
+  }
+});
+
+autoUpdater.on('error', (error) => {
+  console.error('Błąd auto-updater:', error);
 });
 
 // Compare version strings (returns 1 if a > b, -1 if a < b, 0 if equal)

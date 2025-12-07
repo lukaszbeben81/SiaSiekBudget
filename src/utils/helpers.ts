@@ -19,8 +19,22 @@ export const formatDateLong = (date: string | Date): string => {
   return format(d, 'd MMMM yyyy', { locale: pl });
 };
 
-export const getDaysRemaining = (endDate: string): number => {
-  return differenceInDays(new Date(endDate), new Date());
+export const getDaysRemaining = (endDate: string, startDate?: string): number => {
+  const today = new Date();
+  const end = new Date(endDate);
+  
+  // Jeśli podano datę początkową, sprawdź czy okres się już rozpoczął
+  if (startDate) {
+    const start = new Date(startDate);
+    if (today < start) {
+      // Okres jeszcze się nie rozpoczął - zwróć całkowitą liczbę dni okresu
+      return differenceInDays(end, start) + 1;
+    }
+  }
+  
+  // Normalne obliczenie dla trwającego okresu
+  const remaining = differenceInDays(end, today);
+  return remaining >= 0 ? remaining : 0;
 };
 
 export const calculateBillingPeriod = (billingDay: number, referenceDate: Date = new Date()): { start: Date; end: Date } => {

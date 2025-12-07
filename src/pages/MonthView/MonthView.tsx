@@ -349,7 +349,7 @@ const MonthView: React.FC<MonthViewProps> = ({ month, onBack, onRefresh, isArchi
   const weeklyTotal = settings.weekly_groceries * saturdays;
   const dailyTotal = settings.daily_expenses * days;
   
-  const daysRemaining = isArchive ? 0 : getDaysRemaining(month.end_date);
+  const daysRemaining = isArchive ? 0 : getDaysRemaining(month.end_date, month.start_date);
   const dailyExpensesRemaining = daysRemaining * (settings?.daily_expenses || 0);
   
   // totalToPay includes unpaid expenses + remaining daily expenses (not for archive)

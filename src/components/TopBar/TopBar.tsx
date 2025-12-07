@@ -87,7 +87,7 @@ const TopBar: React.FC<TopBarProps> = ({
   );
   
   const toPay = calculateToPay(expenses);
-  const daysRemaining = getDaysRemaining(currentMonth.end_date);
+  const daysRemaining = getDaysRemaining(currentMonth.end_date, currentMonth.start_date);
 
   const isToPayNegative = toPay > totalIncome;
 
