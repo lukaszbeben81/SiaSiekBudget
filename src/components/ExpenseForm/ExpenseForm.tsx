@@ -380,7 +380,7 @@ const ExpenseForm: React.FC<ExpenseFormProps> = ({ isOpen, onClose, onSave, mont
 
         <form onSubmit={handleSubmit} className="income-form-content">
           {allowOneTimeExpenses && (
-            <div className="form-field">
+            <div className="form-field" title="Wybierz czy wydatek jest stały (powtarzalny) czy jednorazowy">
               <label>Typ wydatku</label>
               <div className="type-switch">
                 <button
@@ -402,7 +402,7 @@ const ExpenseForm: React.FC<ExpenseFormProps> = ({ isOpen, onClose, onSave, mont
           )}
 
           <div className="form-row">
-            <div className="form-field">
+            <div className="form-field" title="Wpisz nazwę wydatku, np. Czynsz, Prąd, Zakupy">
               <label htmlFor="expense-name">Nazwa wydatku *</label>
               <input
                 id="expense-name"
@@ -414,7 +414,7 @@ const ExpenseForm: React.FC<ExpenseFormProps> = ({ isOpen, onClose, onSave, mont
               />
             </div>
 
-            <div className="form-field">
+            <div className="form-field" title="Podaj kwotę wydatku w złotówkach">
               <label htmlFor="expense-amount">Kwota (PLN) *</label>
               <input
                 id="expense-amount"
@@ -431,7 +431,7 @@ const ExpenseForm: React.FC<ExpenseFormProps> = ({ isOpen, onClose, onSave, mont
           </div>
 
           <div className="form-row">
-            <div className="form-field">
+            <div className="form-field" title="Wybierz kategorię wydatku lub utwórz nową">
               <label htmlFor="expense-category">Kategoria *</label>
               <select
                 id="expense-category"
@@ -492,7 +492,7 @@ const ExpenseForm: React.FC<ExpenseFormProps> = ({ isOpen, onClose, onSave, mont
             </div>
           )}
 
-          <div className="form-field">
+          <div className="form-field" title="Wybierz w której kolumnie (1, 2 lub 3) wydatek ma się wyświetlać w widoku miesiąca">
             <label htmlFor="expense-column">Kolumna wyświetlania</label>
             <select
               id="expense-column"
@@ -519,7 +519,7 @@ const ExpenseForm: React.FC<ExpenseFormProps> = ({ isOpen, onClose, onSave, mont
           )}
 
           {isFixed && hasEndDate && (
-            <div className="form-field">
+            <div className="form-field" title="Określ datę końcową, po której wydatek nie będzie się już pojawiał">
               <label htmlFor="end-date">Data ostatniego wystąpienia</label>
               <input
                 id="end-date"

@@ -4,7 +4,7 @@ const Database = require('./database');
 const { getRandomJoke } = require('./jokes');
 
 // Wersja aplikacji
-const APP_VERSION = '1.2.0';
+const APP_VERSION = '1.2.1';
 const GITHUB_REPO = 'lukaszbeben81/SiaSiekBudget';
 
 let mainWindow;
@@ -14,9 +14,9 @@ function createWindow() {
   mainWindow = new BrowserWindow({
     width: 1400,
     height: 900,
-    fullscreen: true,
     autoHideMenuBar: true,
     backgroundColor: '#141414',
+    icon: path.join(__dirname, '..', 'dolar.ico'),
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
@@ -25,6 +25,9 @@ function createWindow() {
       webSecurity: false
     }
   });
+
+  // Maksymalizuj okno (pełny ekran z paskiem tytułowym)
+  mainWindow.maximize();
 
   // Load React app
   if (process.env.NODE_ENV === 'development' || !app.isPackaged) {

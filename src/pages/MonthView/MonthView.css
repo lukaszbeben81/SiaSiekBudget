@@ -79,10 +79,18 @@
   font-weight: 600;
 }
 
+.stat-label-small {
+  font-size: 0.6rem;
+}
+
 .stat-value {
   font-size: 0.95rem;
   font-weight: 700;
   color: var(--text-primary);
+}
+
+.stat-value-small {
+  font-size: 0.85rem;
 }
 
 .stat-value .month-name {

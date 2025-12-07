@@ -300,7 +300,7 @@ const IncomeForm: React.FC<IncomeFormProps> = ({ isOpen, onClose, onSave, monthI
 
         <form onSubmit={handleSubmit} className="income-form-content">
           <div className="form-row">
-            <div className="form-field">
+            <div className="form-field" title="Wpisz nazwę źródła dochodu, np. Wynagrodzenie, Premia, itp.">
               <label htmlFor="income-name">Nazwa dochodu *</label>
               <input
                 id="income-name"
@@ -312,7 +312,7 @@ const IncomeForm: React.FC<IncomeFormProps> = ({ isOpen, onClose, onSave, monthI
               />
             </div>
 
-            <div className="form-field">
+            <div className="form-field" title="Podaj wysokość dochodu w złotówkach">
               <label htmlFor="income-amount">Kwota (PLN) *</label>
               <input
                 id="income-amount"
@@ -329,7 +329,7 @@ const IncomeForm: React.FC<IncomeFormProps> = ({ isOpen, onClose, onSave, monthI
           </div>
 
           <div className="form-row">
-            <div className="form-field">
+            <div className="form-field" title="Wybierz kategorię dochodu lub utwórz nową">
               <label htmlFor="income-category">Kategoria *</label>
               <select
                 id="income-category"
@@ -349,7 +349,7 @@ const IncomeForm: React.FC<IncomeFormProps> = ({ isOpen, onClose, onSave, monthI
               </select>
             </div>
 
-            <div className="form-field">
+            <div className="form-field" title="Wpisz wartość podatku lub zaznacz N/D jeśli nie dotyczy">
               <label>Składka na podatek</label>
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px', height: '100%' }}>
                 <label style={{ display: 'flex', alignItems: 'center', gap: '4px', cursor: 'pointer', fontSize: '0.75rem' }}>

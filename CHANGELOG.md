@@ -5,6 +5,27 @@ Wszystkie istotne zmiany w projekcie SiaSiek Budget będą dokumentowane w tym p
 Format bazuje na [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 a projekt używa [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.1] - 2025-12-07
+
+### ✨ Dodano
+- **Własna ikona aplikacji** - dodano ikonę dolar.ico dla aplikacji (widoczna na pulpicie Windows i pasku zadań)
+- **Tooltips (podpowiedzi)** - dodano opisy podpowiedzi dla wszystkich pól w aplikacji:
+  - MonthView: Dni, Zakupy/D, Dochody, Pozostało, Do zapłaty, Zapłacono
+  - TopBar: Data, Dni, Pozostało, Do zapłaty, Wartość długu
+  - IncomeForm: wszystkie pola formularza dochodu
+  - ExpenseForm: wszystkie pola formularza wydatku
+  - CreateMonth: wszystkie pola w kreatorze miesiąca
+
+### 🎨 Zmiany interfejsu
+- **Skrócono napisy** dla lepszej czytelności:
+  - "Dni pozostało" → "Dni"
+  - "Zakupy dzienne" → "Zakupy/D"
+- **Zmniejszono czcionkę** dla pól "Dni" i "Zakupy/D" (label: 0.6rem, value: 0.85rem)
+- **Okno zmaksymalizowane** - aplikacja startuje w trybie zmaksymalizowanym z widocznym paskiem tytułowym Windows (przyciski minimalizuj/maksymalizuj/zamknij)
+
+### 🔧 Naprawiono
+- **Nazwa repozytorium GitHub** - poprawiono nazwę z 'SiaSiek/SiaSiekBudget' na 'lukaszbeben81/SiaSiekBudget' dla działania auto-update
+
 ## [1.2.0] - 2025-12-07
 
 ### ✨ Dodano

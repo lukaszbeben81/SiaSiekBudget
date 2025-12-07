@@ -446,38 +446,38 @@ const MonthView: React.FC<MonthViewProps> = ({ month, onBack, onRefresh, isArchi
             </span>
           </div>
           
-          <div className="stat-item">
-            <span className="stat-label">Dni pozostało</span>
-            <span className="stat-value text-info">{isArchive ? '-' : daysRemaining}</span>
+          <div className="stat-item" title="Liczba dni pozostałych do końca okresu rozliczeniowego">
+            <span className="stat-label stat-label-small">Dni</span>
+            <span className="stat-value stat-value-small text-info">{isArchive ? '-' : daysRemaining}</span>
           </div>
           
-          <div className="stat-item">
-            <span className="stat-label">Zakupy dzienne</span>
-            <span className="stat-value text-white">
+          <div className="stat-item" title="Suma wydatków na zakupy dzienne do końca okresu (dni pozostałe × dzienny limit zakupów)">
+            <span className="stat-label stat-label-small">Zakupy/D</span>
+            <span className="stat-value stat-value-small text-white">
               {isArchive ? '-' : formatCurrency(daysRemaining * (settings?.daily_expenses || 0))}
             </span>
           </div>
           
-          <div className="stat-item">
+          <div className="stat-item" title="Suma wszystkich dochodów w bieżącym okresie">
             <span className="stat-label">Dochody</span>
             <span className="stat-value text-success">{formatCurrency(totalIncome)}</span>
           </div>
           
-          <div className="stat-item">
+          <div className="stat-item" title="Kwota pozostała po odliczeniu wszystkich wydatków i rezerw">
             <span className="stat-label">Pozostało</span>
             <span className={`stat-value ${remaining >= 0 ? 'text-success' : 'text-danger'}`}>
               {formatCurrency(remaining)}
             </span>
           </div>
           
-          <div className="stat-item">
+          <div className="stat-item" title="Suma wszystkich niezapłaconych wydatków">
             <span className="stat-label">Do zapłaty</span>
             <span className={`stat-value ${totalToPay > totalIncome ? 'text-danger' : 'text-success'}`}>
               {formatCurrency(totalToPay)}
             </span>
           </div>
           
-          <div className="stat-item">
+          <div className="stat-item" title="Suma wszystkich opłaconych wydatków">
             <span className="stat-label">Zapłacono</span>
             <span className="stat-value text-muted">{formatCurrency(totalPaid)}</span>
           </div>

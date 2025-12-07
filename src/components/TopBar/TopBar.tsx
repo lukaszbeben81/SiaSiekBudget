@@ -96,31 +96,31 @@ const TopBar: React.FC<TopBarProps> = ({
       <div className="container">
         <div className="topbar-content">
           <div className="topbar-info">
-            <div className="topbar-item">
+            <div className="topbar-item" title="Dzisiejsza data">
               <span className="topbar-label">Data</span>
               <span className="topbar-value">{formatDate(new Date())}</span>
             </div>
 
-            <div className="topbar-item">
-              <span className="topbar-label">Dni pozostało</span>
+            <div className="topbar-item" title="Liczba dni pozostałych do końca okresu rozliczeniowego">
+              <span className="topbar-label">Dni</span>
               <span className="topbar-value text-info">{daysRemaining}</span>
             </div>
 
-            <div className="topbar-item">
+            <div className="topbar-item" title="Kwota pozostała po odliczeniu wszystkich wydatków i rezerw">
               <span className="topbar-label">Pozostało</span>
               <span className={`topbar-value ${remaining >= 0 ? 'text-success' : 'text-danger'}`}>
                 {formatCurrency(remaining)}
               </span>
             </div>
 
-            <div className="topbar-item">
+            <div className="topbar-item" title="Suma wszystkich niezapłaconych wydatków">
               <span className="topbar-label">Do zapłaty</span>
               <span className={`topbar-value ${isToPayNegative ? 'text-danger' : 'text-success'}`}>
                 {formatCurrency(toPay)}
               </span>
             </div>
 
-            <div className="topbar-item">
+            <div className="topbar-item" title="Całkowita wartość wszystkich aktywnych długów">
               <span className="topbar-label">Wartość długu</span>
               <span className="topbar-value text-warning">{formatCurrency(totalDebt)}</span>
             </div>

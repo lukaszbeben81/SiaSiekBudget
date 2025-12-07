@@ -723,7 +723,7 @@ const CreateMonth: React.FC<CreateMonthProps> = ({ onBack, onMonthCreated }) => 
               <div className="custom-dates-form">
                 <h3>Własny okres rozliczeniowy</h3>
                 <div className="form-row">
-                  <div className="form-group">
+                  <div className="form-group" title="Wybierz datę rozpoczęcia okresu rozliczeniowego">
                     <label>Data początkowa</label>
                     <input
                       type="date"
@@ -735,7 +735,7 @@ const CreateMonth: React.FC<CreateMonthProps> = ({ onBack, onMonthCreated }) => 
                       }}
                     />
                   </div>
-                  <div className="form-group">
+                  <div className="form-group" title="Wybierz datę zakończenia okresu rozliczeniowego">
                     <label>Data końcowa</label>
                     <input
                       type="date"
@@ -744,7 +744,7 @@ const CreateMonth: React.FC<CreateMonthProps> = ({ onBack, onMonthCreated }) => 
                     />
                   </div>
                 </div>
-                <div className="form-group">
+                <div className="form-group" title="Podaj nazwę dla tego okresu, np. Grudzień 2025">
                   <label>Nazwa miesiąca</label>
                   <input
                     type="text"
@@ -865,7 +865,7 @@ const CreateMonth: React.FC<CreateMonthProps> = ({ onBack, onMonthCreated }) => 
                     {selectedCatalogIncome && (
                       <div className="catalog-edit-panel">
                         <h4>Edytuj przed dodaniem: {selectedCatalogIncome.name}</h4>
-                        <div className="form-group">
+                        <div className="form-group" title="Zmodyfikuj kwotę dochodu przed dodaniem do miesiąca">
                           <label>Kwota (PLN)</label>
                           <input
                             type="number"
@@ -876,7 +876,7 @@ const CreateMonth: React.FC<CreateMonthProps> = ({ onBack, onMonthCreated }) => 
                             min="0"
                           />
                         </div>
-                        <div className="form-group">
+                        <div className="form-group" title="Zaznacz jeśli podatek nie dotyczy tego dochodu">
                           <label className="checkbox-label">
                             <input
                               type="checkbox"
@@ -887,7 +887,7 @@ const CreateMonth: React.FC<CreateMonthProps> = ({ onBack, onMonthCreated }) => 
                           </label>
                         </div>
                         {!catalogIncomeTaxNA && (
-                          <div className="form-group">
+                          <div className="form-group" title="Wpisz kwotę składki podatkowej">
                             <label>Składka podatkowa (PLN)</label>
                             <input
                               type="number"
@@ -984,7 +984,7 @@ const CreateMonth: React.FC<CreateMonthProps> = ({ onBack, onMonthCreated }) => 
               <div className="add-item-form compact">
                 <h3>{editingExpenseIndex !== null ? 'Edytuj wydatek stały' : 'Nowy wydatek stały'}</h3>
                 <div className="form-row">
-                  <div className="form-group">
+                  <div className="form-group" title="Wpisz nazwę wydatku stałego">
                     <label>Nazwa wydatku</label>
                     <input
                       type="text"
@@ -993,7 +993,7 @@ const CreateMonth: React.FC<CreateMonthProps> = ({ onBack, onMonthCreated }) => 
                       placeholder="np. Czynsz"
                     />
                   </div>
-                  <div className="form-group">
+                  <div className="form-group" title="Wybierz kategorię wydatku">
                     <label>Kategoria</label>
                     <input
                       type="text"
@@ -1004,7 +1004,7 @@ const CreateMonth: React.FC<CreateMonthProps> = ({ onBack, onMonthCreated }) => 
                   </div>
                 </div>
                 <div className="form-row">
-                  <div className="form-group">
+                  <div className="form-group" title="Podaj kwotę wydatku w złotówkach">
                     <label>Kwota (PLN)</label>
                     <input
                       type="number"
@@ -1015,7 +1015,7 @@ const CreateMonth: React.FC<CreateMonthProps> = ({ onBack, onMonthCreated }) => 
                       min="0"
                     />
                   </div>
-                  <div className="form-group">
+                  <div className="form-group" title="Wybierz w której kolumnie wydatek ma się wyświetlać">
                     <label>Kolumna wyświetlania</label>
                     <select
                       value={newExpense.columnNumber || 1}
