@@ -63,6 +63,10 @@
         "filter": [
           "**/*"
         ]
+      },
+      {
+        "from": "dolar.ico",
+        "to": "dolar.ico"
       }
     ],
     "win": {
