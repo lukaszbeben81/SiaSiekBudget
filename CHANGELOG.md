@@ -5,6 +5,23 @@ Wszystkie istotne zmiany w projekcie SiaSiek Budget będą dokumentowane w tym p
 Format bazuje na [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 a projekt używa [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.2] - 2025-12-07
+
+### ✨ Dodano
+- **Automatyczne aktualizacje** - integracja z electron-updater dla automatycznego pobierania i instalacji aktualizacji
+- **Powiadomienia o aktualizacjach** - aplikacja automatycznie sprawdza dostępność nowych wersji przy starcie
+
+### 🔧 Naprawiono
+- **Dni pozostało dla przyszłych okresów** - dla okresów które się jeszcze nie rozpoczęły, wyświetlana jest pełna liczba dni okresu zamiast błędnej wartości
+- **Ikona aplikacji na pulpicie** - naprawiono wyświetlanie ikony dolar.ico zamiast domyślnej ikony React na skrócie pulpitu
+- **Auto-update** - pełna implementacja automatycznego systemu aktualizacji przez electron-updater
+
+### 📝 Zmiany techniczne
+- Dodano `electron-updater` do zależności
+- Zaktualizowano `getDaysRemaining()` aby obsługiwać okresy przyszłe
+- Dodano konfigurację `publish` w package.json dla GitHub releases
+- Zaktualizowano installer.nsh dla poprawnego tworzenia skrótów z ikoną
+
 ## [1.2.1] - 2025-12-07
 
 ### ✨ Dodano

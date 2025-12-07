@@ -5,7 +5,7 @@ const Database = require('./database');
 const { getRandomJoke } = require('./jokes');
 
 // Wersja aplikacji
-const APP_VERSION = '1.2.1';
+const APP_VERSION = '1.2.2';
 const GITHUB_REPO = 'lukaszbeben81/SiaSiekBudget';
 
 // Konfiguracja auto-updater
