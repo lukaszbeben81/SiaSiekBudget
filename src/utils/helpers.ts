@@ -21,12 +21,16 @@ export const formatDateLong = (date: string | Date): string => {
 
 export const getDaysRemaining = (endDate: string, startDate?: string): number => {
   const today = new Date();
+  today.setHours(0, 0, 0, 0); // Normalizuj do początku dnia
   const end = new Date(endDate);
+  end.setHours(0, 0, 0, 0);
   
   // Jeśli podano datę początkową, sprawdź czy okres się już rozpoczął
   if (startDate) {
     const start = new Date(startDate);
-    if (today < start) {
+    start.setHours(0, 0, 0, 0);
+    
+    if (today.getTime() < start.getTime()) {
       // Okres jeszcze się nie rozpoczął - zwróć całkowitą liczbę dni okresu
       return differenceInDays(end, start) + 1;
     }
