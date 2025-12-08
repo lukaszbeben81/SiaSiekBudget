@@ -257,12 +257,14 @@ const Catalog: React.FC<CatalogProps> = ({ onBack, isAdmin = true }) => {
               <div className="export-dropdown" style={{ position: 'relative' }}>
                 <button 
                   className="btn-secondary"
+                  title="Eksportuj wydatki stałe do Excel, CSV lub TXT"
                   onClick={() => {
                     const dropdown = document.getElementById('export-expenses-menu');
                     if (dropdown) dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
                   }}
+                  style={{ fontSize: '1.2rem', padding: '0.5rem', minWidth: 'auto' }}
                 >
-                  📥 Eksport wydatków
+                  📥
                 </button>
                 <div 
                   id="export-expenses-menu" 
@@ -328,12 +330,14 @@ const Catalog: React.FC<CatalogProps> = ({ onBack, isAdmin = true }) => {
               <div className="export-dropdown" style={{ position: 'relative' }}>
                 <button 
                   className="btn-secondary"
+                  title="Eksportuj dochody stałe do Excel, CSV lub TXT"
                   onClick={() => {
                     const dropdown = document.getElementById('export-incomes-menu');
                     if (dropdown) dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
                   }}
+                  style={{ fontSize: '1.2rem', padding: '0.5rem', minWidth: 'auto' }}
                 >
-                  📥 Eksport dochodów
+                  📥
                 </button>
                 <div 
                   id="export-incomes-menu" 

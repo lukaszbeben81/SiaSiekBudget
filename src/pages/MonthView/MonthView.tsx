@@ -559,20 +559,26 @@ const MonthView: React.FC<MonthViewProps> = ({ month, onBack, onRefresh, isArchi
         </div>
         
         {isAdmin && !isArchive && (
-          <div style={{ display: 'flex', gap: '0.5rem' }}>
-            <button className="btn-add-expense" title="Dodaj wydatek" onClick={handleAddExpense}>
+          <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+            <button 
+              className="btn-add-expense" 
+              title="Dodaj wydatek" 
+              onClick={handleAddExpense}
+              style={{ fontSize: '0.85rem', padding: '0.5rem 0.75rem' }}
+            >
               - Wydatek
             </button>
             <div className="export-dropdown" style={{ position: 'relative' }}>
               <button 
                 className="btn-secondary" 
-                title="Eksportuj dane miesiąca"
+                title="Eksportuj dane miesiąca do Excel, CSV lub TXT"
                 onClick={() => {
                   const dropdown = document.getElementById('export-menu');
                   if (dropdown) dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
                 }}
+                style={{ fontSize: '1.2rem', padding: '0.5rem', minWidth: 'auto' }}
               >
-                📥 Eksport
+                📥
               </button>
               <div 
                 id="export-menu" 

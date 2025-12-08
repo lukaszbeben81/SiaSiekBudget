@@ -288,12 +288,14 @@ const Piggybank: React.FC<PiggybankProps> = ({ onBack, isAdmin = true }) => {
                 <div className="export-dropdown" style={{ position: 'relative' }}>
                   <button 
                     className="btn-secondary"
+                    title="Eksportuj skarbonki do Excel, CSV lub TXT"
                     onClick={() => {
                       const dropdown = document.getElementById('export-piggybank-menu');
                       if (dropdown) dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
                     }}
+                    style={{ fontSize: '1.2rem', padding: '0.5rem', minWidth: 'auto' }}
                   >
-                    📥 Eksport
+                    📥
                   </button>
                   <div 
                     id="export-piggybank-menu" 
