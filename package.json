@@ -1,6 +1,6 @@
 {
   "name": "siasiek-budget",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "description": "Aplikacja do zarządzania budżetem domowym",
   "main": "electron/main.js",
   "scripts": {

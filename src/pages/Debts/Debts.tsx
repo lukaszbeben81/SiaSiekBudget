@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Debt } from '../../types';
 import Modal from '../../components/Modal/Modal';
 import { formatCurrency, formatDate, clearZeroOnFocus } from '../../utils/helpers';
+import { exportToCSV, exportToTXT, exportToExcel } from '../../utils/exportHelpers';
 import './Debts.css';
 
 interface DebtsProps {
@@ -184,6 +185,32 @@ const Debts: React.FC<DebtsProps> = ({ onBack, isAdmin = true }) => {
     });
   };
 
+  const handleExport = (format: 'csv' | 'txt' | 'excel', mode: ViewMode) => {
+    const debtsToExport = mode === 'active' ? activeDebts : paidDebts;
+    
+    const data = debtsToExport.map(debt => ({
+      'Nazwa': debt.name,
+      'Kwota całkowita': debt.total_amount.toFixed(2),
+      'Zapłacono': debt.paid_amount.toFixed(2),
+      'Pozostało': (debt.total_amount - debt.paid_amount).toFixed(2),
+      'Wierzyciel': debt.creditor || '-',
+      'Data zaciągnięcia': debt.date_incurred,
+      'Termin spłaty': debt.due_date || '-',
+      'Status': debt.is_paid === 1 ? 'Spłacony' : 'Aktywny'
+    }));
+
+    const timestamp = new Date().toISOString().slice(0, 10);
+    const modeLabel = mode === 'active' ? 'Aktywne' : 'Historia';
+    
+    if (format === 'csv') {
+      exportToCSV(data, `Długi_${modeLabel}_${timestamp}.csv`);
+    } else if (format === 'txt') {
+      exportToTXT(data, `Długi_${modeLabel}_${timestamp}.txt`, `Raport długów - ${modeLabel}`);
+    } else if (format === 'excel') {
+      exportToExcel(data, `Długi_${modeLabel}_${timestamp}.xls`, `Długi ${modeLabel}`);
+    }
+  };
+
   const handleGenerateTestDebts = async () => {
     const testDebts = [
       {
@@ -299,6 +326,77 @@ const Debts: React.FC<DebtsProps> = ({ onBack, isAdmin = true }) => {
         </div>
         
         <div style={{ display: 'flex', gap: '0.5rem' }}>
+          {displayedDebts.length > 0 && (
+            <div className="export-dropdown" style={{ position: 'relative' }}>
+              <button 
+                className="btn-secondary"
+                onClick={() => {
+                  const dropdown = document.getElementById('export-debts-menu');
+                  if (dropdown) dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+                }}
+              >
+                📥 Eksport
+              </button>
+              <div 
+                id="export-debts-menu" 
+                style={{
+                  display: 'none',
+                  position: 'absolute',
+                  top: '100%',
+                  right: 0,
+                  backgroundColor: 'var(--bg-secondary)',
+                  border: '1px solid var(--border-color)',
+                  borderRadius: '4px',
+                  marginTop: '0.25rem',
+                  zIndex: 1000,
+                  minWidth: '120px'
+                }}
+              >
+                <button 
+                  onClick={() => { handleExport('excel', viewMode); document.getElementById('export-debts-menu')!.style.display = 'none'; }}
+                  style={{
+                    width: '100%',
+                    padding: '0.5rem',
+                    border: 'none',
+                    background: 'none',
+                    cursor: 'pointer',
+                    textAlign: 'left',
+                    color: 'var(--text-primary)'
+                  }}
+                >
+                  📊 Excel
+                </button>
+                <button 
+                  onClick={() => { handleExport('csv', viewMode); document.getElementById('export-debts-menu')!.style.display = 'none'; }}
+                  style={{
+                    width: '100%',
+                    padding: '0.5rem',
+                    border: 'none',
+                    background: 'none',
+                    cursor: 'pointer',
+                    textAlign: 'left',
+                    color: 'var(--text-primary)'
+                  }}
+                >
+                  📄 CSV
+                </button>
+                <button 
+                  onClick={() => { handleExport('txt', viewMode); document.getElementById('export-debts-menu')!.style.display = 'none'; }}
+                  style={{
+                    width: '100%',
+                    padding: '0.5rem',
+                    border: 'none',
+                    background: 'none',
+                    cursor: 'pointer',
+                    textAlign: 'left',
+                    color: 'var(--text-primary)'
+                  }}
+                >
+                  📝 TXT
+                </button>
+              </div>
+            </div>
+          )}
           {developerMode && viewMode === 'active' && (
             <button 
               className="btn-secondary" 

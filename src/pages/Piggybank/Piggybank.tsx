@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Piggybank as PiggybankType } from '../../types';
 import { clearZeroOnFocus } from '../../utils/helpers';
+import { exportToCSV, exportToTXT, exportToExcel } from '../../utils/exportHelpers';
 import Modal from '../../components/Modal/Modal';
 import './Piggybank.css';
 
@@ -224,6 +225,29 @@ const Piggybank: React.FC<PiggybankProps> = ({ onBack, isAdmin = true }) => {
     });
   };
 
+  const handleExport = (format: 'csv' | 'txt' | 'excel') => {
+    const data = piggybanks.map(pb => ({
+      'Nazwa': pb.name,
+      'Aktualnie': pb.current_amount.toFixed(2),
+      'Cel': pb.target_amount.toFixed(2),
+      'Miesięcznie': pb.monthly_amount.toFixed(2),
+      'Postęp': `${getProgress(pb).toFixed(1)}%`,
+      'Częstotliwość': getFrequencyLabel(pb.frequency),
+      'Data rozpoczęcia': pb.start_date,
+      'Data zakończenia': pb.end_date || 'Brak'
+    }));
+
+    const timestamp = new Date().toISOString().slice(0, 10);
+    
+    if (format === 'csv') {
+      exportToCSV(data, `Skarbonki_${timestamp}.csv`);
+    } else if (format === 'txt') {
+      exportToTXT(data, `Skarbonki_${timestamp}.txt`, 'Raport skarbonek');
+    } else if (format === 'excel') {
+      exportToExcel(data, `Skarbonki_${timestamp}.xls`, 'Skarbonki');
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex-center" style={{ minHeight: '100vh' }}>
@@ -259,16 +283,89 @@ const Piggybank: React.FC<PiggybankProps> = ({ onBack, isAdmin = true }) => {
               </span>
             </div>
             
-            {isAdmin && (
-              <button 
-                className="btn-primary"
-                onClick={() => handleOpenForm()}
-                disabled={piggybanks.length >= 10}
-                title={piggybanks.length >= 10 ? 'Osiągnięto maksymalną liczbę skarbonek' : 'Dodaj nową skarbonkę'}
-              >
-                + Nowa skarbonka
-              </button>
-            )}
+            <div style={{ display: 'flex', gap: '0.5rem' }}>
+              {piggybanks.length > 0 && (
+                <div className="export-dropdown" style={{ position: 'relative' }}>
+                  <button 
+                    className="btn-secondary"
+                    onClick={() => {
+                      const dropdown = document.getElementById('export-piggybank-menu');
+                      if (dropdown) dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+                    }}
+                  >
+                    📥 Eksport
+                  </button>
+                  <div 
+                    id="export-piggybank-menu" 
+                    style={{
+                      display: 'none',
+                      position: 'absolute',
+                      top: '100%',
+                      right: 0,
+                      backgroundColor: 'var(--bg-secondary)',
+                      border: '1px solid var(--border-color)',
+                      borderRadius: '4px',
+                      marginTop: '0.25rem',
+                      zIndex: 1000,
+                      minWidth: '120px'
+                    }}
+                  >
+                    <button 
+                      onClick={() => { handleExport('excel'); document.getElementById('export-piggybank-menu')!.style.display = 'none'; }}
+                      style={{
+                        width: '100%',
+                        padding: '0.5rem',
+                        border: 'none',
+                        background: 'none',
+                        cursor: 'pointer',
+                        textAlign: 'left',
+                        color: 'var(--text-primary)'
+                      }}
+                    >
+                      📊 Excel
+                    </button>
+                    <button 
+                      onClick={() => { handleExport('csv'); document.getElementById('export-piggybank-menu')!.style.display = 'none'; }}
+                      style={{
+                        width: '100%',
+                        padding: '0.5rem',
+                        border: 'none',
+                        background: 'none',
+                        cursor: 'pointer',
+                        textAlign: 'left',
+                        color: 'var(--text-primary)'
+                      }}
+                    >
+                      📄 CSV
+                    </button>
+                    <button 
+                      onClick={() => { handleExport('txt'); document.getElementById('export-piggybank-menu')!.style.display = 'none'; }}
+                      style={{
+                        width: '100%',
+                        padding: '0.5rem',
+                        border: 'none',
+                        background: 'none',
+                        cursor: 'pointer',
+                        textAlign: 'left',
+                        color: 'var(--text-primary)'
+                      }}
+                    >
+                      📝 TXT
+                    </button>
+                  </div>
+                </div>
+              )}
+              {isAdmin && (
+                <button 
+                  className="btn-primary"
+                  onClick={() => handleOpenForm()}
+                  disabled={piggybanks.length >= 10}
+                  title={piggybanks.length >= 10 ? 'Osiągnięto maksymalną liczbę skarbonek' : 'Dodaj nową skarbonkę'}
+                >
+                  + Nowa skarbonka
+                </button>
+              )}
+            </div>
           </div>
 
           <div className="piggybank-list">

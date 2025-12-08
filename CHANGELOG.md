@@ -5,6 +5,26 @@ Wszystkie istotne zmiany w projekcie SiaSiek Budget będą dokumentowane w tym p
 Format bazuje na [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 a projekt używa [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.3] - 2025-12-08
+
+### ✨ Dodano
+- **Eksport danych do Excel/CSV/TXT** - możliwość eksportu danych z aplikacji:
+  - **Bieżący miesiąc** - eksport przychodów, wydatków i podsumowania miesiąca
+  - **Wydatki stałe** - eksport katalogu wydatków stałych
+  - **Dochody stałe** - eksport katalogu dochodów stałych
+  - **Skarbonki** - eksport listy skarbonek z postępem oszczędzania
+  - **Długi** - eksport aktywnych długów lub historii spłaconych długów
+- **Przycisk eksportu** - dodano przyciski eksportu we wszystkich widokach z menu wyboru formatu (Excel/CSV/TXT)
+
+### 🔧 Naprawiono
+- **Wyświetlanie dni dla przyszłych okresów** - jeśli okres rozliczeniowy jeszcze się nie rozpoczął, aplikacja wyświetla pełną liczbę dni okresu (np. 31 dni dla grudnia) zamiast licznika odliczającego do początku okresu
+
+### 📝 Zmiany techniczne
+- Dodano moduł `exportHelpers.ts` z funkcjami eksportu do różnych formatów
+- Eksport do Excel wykorzystuje format XML (Excel 2003) kompatybilny z większością wersji Excel
+- Wszystkie eksporty zawierają BOM UTF-8 dla poprawnego kodowania polskich znaków
+- Funkcja `getDaysRemaining()` już wspiera logikę przyszłych okresów (z wersji 1.2.2)
+
 ## [1.2.2] - 2025-12-07
 
 ### ✨ Dodano

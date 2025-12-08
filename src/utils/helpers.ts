@@ -20,24 +20,27 @@ export const formatDateLong = (date: string | Date): string => {
 };
 
 export const getDaysRemaining = (endDate: string, startDate?: string): number => {
+  // Użyj Date.UTC dla poprawnego parsowania dat bez problemów ze strefami czasowymi
   const today = new Date();
-  today.setHours(0, 0, 0, 0); // Normalizuj do początku dnia
-  const end = new Date(endDate);
-  end.setHours(0, 0, 0, 0);
+  const todayUTC = Date.UTC(today.getFullYear(), today.getMonth(), today.getDate());
+  
+  const [endYear, endMonth, endDay] = endDate.split('-').map(Number);
+  const endUTC = Date.UTC(endYear, endMonth - 1, endDay);
   
   // Jeśli podano datę początkową, sprawdź czy okres się już rozpoczął
   if (startDate) {
-    const start = new Date(startDate);
-    start.setHours(0, 0, 0, 0);
+    const [startYear, startMonth, startDay] = startDate.split('-').map(Number);
+    const startUTC = Date.UTC(startYear, startMonth - 1, startDay);
     
-    if (today.getTime() < start.getTime()) {
+    if (todayUTC < startUTC) {
       // Okres jeszcze się nie rozpoczął - zwróć całkowitą liczbę dni okresu
-      return differenceInDays(end, start) + 1;
+      const totalDays = Math.floor((endUTC - startUTC) / (1000 * 60 * 60 * 24)) + 1;
+      return totalDays;
     }
   }
   
   // Normalne obliczenie dla trwającego okresu
-  const remaining = differenceInDays(end, today);
+  const remaining = Math.floor((endUTC - todayUTC) / (1000 * 60 * 60 * 24));
   return remaining >= 0 ? remaining : 0;
 };
 

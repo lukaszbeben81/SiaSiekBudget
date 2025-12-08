@@ -4,6 +4,7 @@ import Modal from '../../components/Modal/Modal';
 import IncomeForm, { IncomeFormData } from '../../components/IncomeForm';
 import ExpenseForm, { ExpenseFormData } from '../../components/ExpenseForm';
 import { isProtectedExpenseCategory, isProtectedIncomeCategory } from '../../constants/protectedCategories';
+import { exportToCSV, exportToTXT, exportToExcel } from '../../utils/exportHelpers';
 import './Catalog.css';
 
 interface CatalogProps {
@@ -159,6 +160,45 @@ const Catalog: React.FC<CatalogProps> = ({ onBack, isAdmin = true }) => {
     }
   };
 
+  const handleExportExpenses = (format: 'csv' | 'txt' | 'excel') => {
+    const data = expenses.map(exp => ({
+      'Nazwa': exp.name,
+      'Kategoria': exp.category || '',
+      'Domyślna kwota': exp.default_amount.toFixed(2),
+      'Kolumna': exp.column_number || 1,
+      'Aktywny': exp.is_active === 1 ? 'Tak' : 'Nie'
+    }));
+
+    const timestamp = new Date().toISOString().slice(0, 10);
+    
+    if (format === 'csv') {
+      exportToCSV(data, `Wydatki_stale_${timestamp}.csv`);
+    } else if (format === 'txt') {
+      exportToTXT(data, `Wydatki_stale_${timestamp}.txt`, 'Katalog wydatków stałych');
+    } else if (format === 'excel') {
+      exportToExcel(data, `Wydatki_stale_${timestamp}.xls`, 'Wydatki stałe');
+    }
+  };
+
+  const handleExportIncomes = (format: 'csv' | 'txt' | 'excel') => {
+    const data = incomes.map(inc => ({
+      'Nazwa': inc.name,
+      'Kategoria': inc.category || '',
+      'Domyślna kwota': inc.default_amount.toFixed(2),
+      'Aktywny': inc.is_active === 1 ? 'Tak' : 'Nie'
+    }));
+
+    const timestamp = new Date().toISOString().slice(0, 10);
+    
+    if (format === 'csv') {
+      exportToCSV(data, `Dochody_stale_${timestamp}.csv`);
+    } else if (format === 'txt') {
+      exportToTXT(data, `Dochody_stale_${timestamp}.txt`, 'Katalog dochodów stałych');
+    } else if (format === 'excel') {
+      exportToExcel(data, `Dochody_stale_${timestamp}.xls`, 'Dochody stałe');
+    }
+  };
+
   const filteredExpenses = filter === 'incomes' ? [] : expenses;
   const filteredIncomes = filter === 'expenses' ? [] : incomes;
 
@@ -213,6 +253,148 @@ const Catalog: React.FC<CatalogProps> = ({ onBack, isAdmin = true }) => {
           </div>
           
           <div style={{ display: 'flex', gap: '12px', flexShrink: 0 }}>
+            {filter !== 'incomes' && filteredExpenses.length > 0 && (
+              <div className="export-dropdown" style={{ position: 'relative' }}>
+                <button 
+                  className="btn-secondary"
+                  onClick={() => {
+                    const dropdown = document.getElementById('export-expenses-menu');
+                    if (dropdown) dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+                  }}
+                >
+                  📥 Eksport wydatków
+                </button>
+                <div 
+                  id="export-expenses-menu" 
+                  style={{
+                    display: 'none',
+                    position: 'absolute',
+                    top: '100%',
+                    right: 0,
+                    backgroundColor: 'var(--bg-secondary)',
+                    border: '1px solid var(--border-color)',
+                    borderRadius: '4px',
+                    marginTop: '0.25rem',
+                    zIndex: 1000,
+                    minWidth: '120px'
+                  }}
+                >
+                  <button 
+                    onClick={() => { handleExportExpenses('excel'); document.getElementById('export-expenses-menu')!.style.display = 'none'; }}
+                    style={{
+                      width: '100%',
+                      padding: '0.5rem',
+                      border: 'none',
+                      background: 'none',
+                      cursor: 'pointer',
+                      textAlign: 'left',
+                      color: 'var(--text-primary)'
+                    }}
+                  >
+                    📊 Excel
+                  </button>
+                  <button 
+                    onClick={() => { handleExportExpenses('csv'); document.getElementById('export-expenses-menu')!.style.display = 'none'; }}
+                    style={{
+                      width: '100%',
+                      padding: '0.5rem',
+                      border: 'none',
+                      background: 'none',
+                      cursor: 'pointer',
+                      textAlign: 'left',
+                      color: 'var(--text-primary)'
+                    }}
+                  >
+                    📄 CSV
+                  </button>
+                  <button 
+                    onClick={() => { handleExportExpenses('txt'); document.getElementById('export-expenses-menu')!.style.display = 'none'; }}
+                    style={{
+                      width: '100%',
+                      padding: '0.5rem',
+                      border: 'none',
+                      background: 'none',
+                      cursor: 'pointer',
+                      textAlign: 'left',
+                      color: 'var(--text-primary)'
+                    }}
+                  >
+                    📝 TXT
+                  </button>
+                </div>
+              </div>
+            )}
+            {filter !== 'expenses' && filteredIncomes.length > 0 && (
+              <div className="export-dropdown" style={{ position: 'relative' }}>
+                <button 
+                  className="btn-secondary"
+                  onClick={() => {
+                    const dropdown = document.getElementById('export-incomes-menu');
+                    if (dropdown) dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+                  }}
+                >
+                  📥 Eksport dochodów
+                </button>
+                <div 
+                  id="export-incomes-menu" 
+                  style={{
+                    display: 'none',
+                    position: 'absolute',
+                    top: '100%',
+                    right: 0,
+                    backgroundColor: 'var(--bg-secondary)',
+                    border: '1px solid var(--border-color)',
+                    borderRadius: '4px',
+                    marginTop: '0.25rem',
+                    zIndex: 1000,
+                    minWidth: '120px'
+                  }}
+                >
+                  <button 
+                    onClick={() => { handleExportIncomes('excel'); document.getElementById('export-incomes-menu')!.style.display = 'none'; }}
+                    style={{
+                      width: '100%',
+                      padding: '0.5rem',
+                      border: 'none',
+                      background: 'none',
+                      cursor: 'pointer',
+                      textAlign: 'left',
+                      color: 'var(--text-primary)'
+                    }}
+                  >
+                    📊 Excel
+                  </button>
+                  <button 
+                    onClick={() => { handleExportIncomes('csv'); document.getElementById('export-incomes-menu')!.style.display = 'none'; }}
+                    style={{
+                      width: '100%',
+                      padding: '0.5rem',
+                      border: 'none',
+                      background: 'none',
+                      cursor: 'pointer',
+                      textAlign: 'left',
+                      color: 'var(--text-primary)'
+                    }}
+                  >
+                    📄 CSV
+                  </button>
+                  <button 
+                    onClick={() => { handleExportIncomes('txt'); document.getElementById('export-incomes-menu')!.style.display = 'none'; }}
+                    style={{
+                      width: '100%',
+                      padding: '0.5rem',
+                      border: 'none',
+                      background: 'none',
+                      cursor: 'pointer',
+                      textAlign: 'left',
+                      color: 'var(--text-primary)'
+                    }}
+                  >
+                    📝 TXT
+                  </button>
+                </div>
+              </div>
+            )}
             {isAdmin && (
               <>
                 <button 

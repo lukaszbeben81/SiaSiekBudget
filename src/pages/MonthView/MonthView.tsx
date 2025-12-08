@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Month, Income, Expense, Settings, Debt, PlannedExpense } from '../../types';
 import { formatCurrency, getDaysRemaining, getSaturdaysInPeriod, getDaysInPeriod } from '../../utils/helpers';
+import { exportToCSV, exportToTXT, exportToExcel } from '../../utils/exportHelpers';
 import Modal from '../../components/Modal/Modal';
 import IncomeForm, { IncomeFormData } from '../../components/IncomeForm';
 import ExpenseForm, { ExpenseFormData } from '../../components/ExpenseForm';
@@ -315,6 +316,53 @@ const MonthView: React.FC<MonthViewProps> = ({ month, onBack, onRefresh, isArchi
     return date.toLocaleDateString('pl-PL', { month: 'long', year: 'numeric' });
   };
 
+  const handleExportMonth = (format: 'csv' | 'txt' | 'excel') => {
+    if (!month) return;
+
+    const exportData = {
+      incomes: incomes.map(inc => ({
+        'Nazwa': inc.name,
+        'Kwota': inc.amount.toFixed(2),
+        'Stały': inc.is_recurring === 1 ? 'Tak' : 'Nie'
+      })),
+      expenses: expenses.map(exp => ({
+        'Nazwa': exp.name,
+        'Kategoria': exp.category || '',
+        'Kwota całkowita': exp.total_amount.toFixed(2),
+        'Zapłacono': exp.paid_amount.toFixed(2),
+        'Pozostało': (exp.total_amount - exp.paid_amount).toFixed(2),
+        'Typ': exp.is_fixed === 1 ? 'Stały' : 'Jednorazowy',
+        'Kolumna': exp.column_number || 1
+      })),
+      summary: [{
+        'Suma dochodów': totalIncome.toFixed(2),
+        'Suma wydatków': totalExpenses.toFixed(2),
+        'Zapłacono': totalPaid.toFixed(2),
+        'Do zapłaty': totalToPay.toFixed(2),
+        'Pozostało': remaining.toFixed(2),
+        'Zakupy tygodniowe': weeklyTotal.toFixed(2),
+        'Zakupy dzienne': dailyTotal.toFixed(2),
+        'Dni pozostało': daysRemaining
+      }]
+    };
+
+    const timestamp = new Date().toISOString().slice(0, 10);
+    const monthName = month.name.replace(/\s+/g, '_');
+
+    if (format === 'csv') {
+      exportToCSV([...exportData.incomes, {}, ...exportData.expenses, {}, ...exportData.summary], 
+        `${monthName}_${timestamp}.csv`);
+    } else if (format === 'txt') {
+      exportToTXT([...exportData.incomes, {}, ...exportData.expenses, {}, ...exportData.summary], 
+        `${monthName}_${timestamp}.txt`, 
+        `Raport miesiąca: ${month.name}`);
+    } else if (format === 'excel') {
+      exportToExcel([...exportData.incomes, {}, ...exportData.expenses, {}, ...exportData.summary], 
+        `${monthName}_${timestamp}.xls`, 
+        month.name);
+    }
+  };
+
   const totalPlannedExpenses = plannedExpenses.reduce((sum, pe) => sum + pe.amount, 0);
 
   if (!month) {
@@ -511,9 +559,81 @@ const MonthView: React.FC<MonthViewProps> = ({ month, onBack, onRefresh, isArchi
         </div>
         
         {isAdmin && !isArchive && (
-          <button className="btn-add-expense" title="Dodaj wydatek" onClick={handleAddExpense}>
-            - Wydatek
-          </button>
+          <div style={{ display: 'flex', gap: '0.5rem' }}>
+            <button className="btn-add-expense" title="Dodaj wydatek" onClick={handleAddExpense}>
+              - Wydatek
+            </button>
+            <div className="export-dropdown" style={{ position: 'relative' }}>
+              <button 
+                className="btn-secondary" 
+                title="Eksportuj dane miesiąca"
+                onClick={() => {
+                  const dropdown = document.getElementById('export-menu');
+                  if (dropdown) dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+                }}
+              >
+                📥 Eksport
+              </button>
+              <div 
+                id="export-menu" 
+                style={{
+                  display: 'none',
+                  position: 'absolute',
+                  top: '100%',
+                  right: 0,
+                  backgroundColor: 'var(--bg-secondary)',
+                  border: '1px solid var(--border-color)',
+                  borderRadius: '4px',
+                  marginTop: '0.25rem',
+                  zIndex: 1000,
+                  minWidth: '120px'
+                }}
+              >
+                <button 
+                  onClick={() => { handleExportMonth('excel'); document.getElementById('export-menu')!.style.display = 'none'; }}
+                  style={{
+                    width: '100%',
+                    padding: '0.5rem',
+                    border: 'none',
+                    background: 'none',
+                    cursor: 'pointer',
+                    textAlign: 'left',
+                    color: 'var(--text-primary)'
+                  }}
+                >
+                  📊 Excel
+                </button>
+                <button 
+                  onClick={() => { handleExportMonth('csv'); document.getElementById('export-menu')!.style.display = 'none'; }}
+                  style={{
+                    width: '100%',
+                    padding: '0.5rem',
+                    border: 'none',
+                    background: 'none',
+                    cursor: 'pointer',
+                    textAlign: 'left',
+                    color: 'var(--text-primary)'
+                  }}
+                >
+                  📄 CSV
+                </button>
+                <button 
+                  onClick={() => { handleExportMonth('txt'); document.getElementById('export-menu')!.style.display = 'none'; }}
+                  style={{
+                    width: '100%',
+                    padding: '0.5rem',
+                    border: 'none',
+                    background: 'none',
+                    cursor: 'pointer',
+                    textAlign: 'left',
+                    color: 'var(--text-primary)'
+                  }}
+                >
+                  📝 TXT
+                </button>
+              </div>
+            </div>
+          </div>
         )}
       </div>
 
