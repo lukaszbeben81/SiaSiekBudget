@@ -319,47 +319,114 @@ const MonthView: React.FC<MonthViewProps> = ({ month, onBack, onRefresh, isArchi
   const handleExportMonth = (format: 'csv' | 'txt' | 'excel') => {
     if (!month) return;
 
-    const exportData = {
-      incomes: incomes.map(inc => ({
-        'Nazwa': inc.name,
-        'Kwota': inc.amount.toFixed(2),
-        'Stały': inc.is_recurring === 1 ? 'Tak' : 'Nie'
-      })),
-      expenses: expenses.map(exp => ({
-        'Nazwa': exp.name,
-        'Kategoria': exp.category || '',
-        'Kwota całkowita': exp.total_amount.toFixed(2),
-        'Zapłacono': exp.paid_amount.toFixed(2),
-        'Pozostało': (exp.total_amount - exp.paid_amount).toFixed(2),
-        'Typ': exp.is_fixed === 1 ? 'Stały' : 'Jednorazowy',
-        'Kolumna': exp.column_number || 1
-      })),
-      summary: [{
-        'Suma dochodów': totalIncome.toFixed(2),
-        'Suma wydatków': totalExpenses.toFixed(2),
-        'Zapłacono': totalPaid.toFixed(2),
-        'Do zapłaty': totalToPay.toFixed(2),
-        'Pozostało': remaining.toFixed(2),
-        'Zakupy tygodniowe': weeklyTotal.toFixed(2),
-        'Zakupy dzienne': dailyTotal.toFixed(2),
-        'Dni pozostało': daysRemaining
-      }]
-    };
+    // Przygotuj sekcje danych
+    const incomesData = incomes.map(inc => ({
+      'Sekcja': 'DOCHODY',
+      'Nazwa': inc.name,
+      'Kwota': inc.amount.toFixed(2) + ' PLN',
+      'Stały': inc.is_recurring === 1 ? 'Tak' : 'Nie',
+      'Kategoria': '',
+      'Zapłacono': '',
+      'Pozostało': '',
+      'Typ': ''
+    }));
+
+    const expensesData = expenses.map(exp => ({
+      'Sekcja': 'WYDATKI',
+      'Nazwa': exp.name,
+      'Kwota': exp.total_amount.toFixed(2) + ' PLN',
+      'Stały': '',
+      'Kategoria': exp.category || '',
+      'Zapłacono': exp.paid_amount.toFixed(2) + ' PLN',
+      'Pozostało': (exp.total_amount - exp.paid_amount).toFixed(2) + ' PLN',
+      'Typ': exp.is_fixed === 1 ? 'Stały' : 'Jednorazowy'
+    }));
+
+    const summaryData = [{
+      'Sekcja': 'PODSUMOWANIE',
+      'Nazwa': 'Suma dochodów',
+      'Kwota': totalIncome.toFixed(2) + ' PLN',
+      'Stały': '',
+      'Kategoria': '',
+      'Zapłacono': '',
+      'Pozostało': '',
+      'Typ': ''
+    }, {
+      'Sekcja': 'PODSUMOWANIE',
+      'Nazwa': 'Suma wydatków',
+      'Kwota': totalExpenses.toFixed(2) + ' PLN',
+      'Stały': '',
+      'Kategoria': '',
+      'Zapłacono': '',
+      'Pozostało': '',
+      'Typ': ''
+    }, {
+      'Sekcja': 'PODSUMOWANIE',
+      'Nazwa': 'Zapłacono',
+      'Kwota': totalPaid.toFixed(2) + ' PLN',
+      'Stały': '',
+      'Kategoria': '',
+      'Zapłacono': '',
+      'Pozostało': '',
+      'Typ': ''
+    }, {
+      'Sekcja': 'PODSUMOWANIE',
+      'Nazwa': 'Do zapłaty',
+      'Kwota': totalToPay.toFixed(2) + ' PLN',
+      'Stały': '',
+      'Kategoria': '',
+      'Zapłacono': '',
+      'Pozostało': '',
+      'Typ': ''
+    }, {
+      'Sekcja': 'PODSUMOWANIE',
+      'Nazwa': 'Pozostało',
+      'Kwota': remaining.toFixed(2) + ' PLN',
+      'Stały': '',
+      'Kategoria': '',
+      'Zapłacono': '',
+      'Pozostało': '',
+      'Typ': ''
+    }, {
+      'Sekcja': 'PODSUMOWANIE',
+      'Nazwa': 'Zakupy tygodniowe',
+      'Kwota': weeklyTotal.toFixed(2) + ' PLN',
+      'Stały': '',
+      'Kategoria': '',
+      'Zapłacono': '',
+      'Pozostało': '',
+      'Typ': ''
+    }, {
+      'Sekcja': 'PODSUMOWANIE',
+      'Nazwa': 'Zakupy dzienne',
+      'Kwota': dailyTotal.toFixed(2) + ' PLN',
+      'Stały': '',
+      'Kategoria': '',
+      'Zapłacono': '',
+      'Pozostało': '',
+      'Typ': ''
+    }, {
+      'Sekcja': 'PODSUMOWANIE',
+      'Nazwa': 'Dni pozostało',
+      'Kwota': daysRemaining.toString(),
+      'Stały': '',
+      'Kategoria': '',
+      'Zapłacono': '',
+      'Pozostało': '',
+      'Typ': ''
+    }];
+
+    const allData = [...incomesData, ...expensesData, ...summaryData];
 
     const timestamp = new Date().toISOString().slice(0, 10);
     const monthName = month.name.replace(/\s+/g, '_');
 
     if (format === 'csv') {
-      exportToCSV([...exportData.incomes, {}, ...exportData.expenses, {}, ...exportData.summary], 
-        `${monthName}_${timestamp}.csv`);
+      exportToCSV(allData, `${monthName}_${timestamp}.csv`);
     } else if (format === 'txt') {
-      exportToTXT([...exportData.incomes, {}, ...exportData.expenses, {}, ...exportData.summary], 
-        `${monthName}_${timestamp}.txt`, 
-        `Raport miesiąca: ${month.name}`);
+      exportToTXT(allData, `${monthName}_${timestamp}.txt`, `Raport miesiąca: ${month.name}`);
     } else if (format === 'excel') {
-      exportToExcel([...exportData.incomes, {}, ...exportData.expenses, {}, ...exportData.summary], 
-        `${monthName}_${timestamp}.xls`, 
-        month.name);
+      exportToExcel(allData, `${monthName}_${timestamp}.xls`, month.name);
     }
   };
 
@@ -559,85 +626,121 @@ const MonthView: React.FC<MonthViewProps> = ({ month, onBack, onRefresh, isArchi
         </div>
         
         {isAdmin && !isArchive && (
-          <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+          <div style={{ position: 'relative' }}>
             <button 
-              className="btn-add-expense" 
-              title="Dodaj wydatek" 
-              onClick={handleAddExpense}
-              style={{ fontSize: '0.85rem', padding: '0.5rem 0.75rem' }}
+              className="btn-secondary" 
+              title="Pokaż menu akcji"
+              onClick={() => {
+                const menu = document.getElementById('actions-menu');
+                if (menu) menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+              }}
+              style={{ fontSize: '1.2rem', padding: '0.5rem 0.75rem' }}
             >
-              - Wydatek
+              ⋮
             </button>
-            <div className="export-dropdown" style={{ position: 'relative' }}>
+            <div 
+              id="actions-menu" 
+              style={{
+                display: 'none',
+                position: 'absolute',
+                top: '100%',
+                right: 0,
+                backgroundColor: 'var(--bg-secondary)',
+                border: '1px solid var(--border-color)',
+                borderRadius: '4px',
+                marginTop: '0.25rem',
+                zIndex: 1000,
+                minWidth: '180px',
+                boxShadow: '0 4px 6px rgba(0, 0, 0, 0.3)'
+              }}
+            >
               <button 
-                className="btn-secondary" 
-                title="Eksportuj dane miesiąca do Excel, CSV lub TXT"
-                onClick={() => {
-                  const dropdown = document.getElementById('export-menu');
-                  if (dropdown) dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+                onClick={() => { 
+                  handleAddExpense(); 
+                  document.getElementById('actions-menu')!.style.display = 'none'; 
                 }}
-                style={{ fontSize: '1.2rem', padding: '0.5rem', minWidth: 'auto' }}
-              >
-                📥
-              </button>
-              <div 
-                id="export-menu" 
                 style={{
-                  display: 'none',
-                  position: 'absolute',
-                  top: '100%',
-                  right: 0,
-                  backgroundColor: 'var(--bg-secondary)',
-                  border: '1px solid var(--border-color)',
-                  borderRadius: '4px',
-                  marginTop: '0.25rem',
-                  zIndex: 1000,
-                  minWidth: '120px'
+                  width: '100%',
+                  padding: '0.75rem 1rem',
+                  border: 'none',
+                  background: 'none',
+                  cursor: 'pointer',
+                  textAlign: 'left',
+                  color: 'var(--text-primary)',
+                  fontSize: '0.9rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.5rem'
                 }}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--bg-hover)'}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
               >
-                <button 
-                  onClick={() => { handleExportMonth('excel'); document.getElementById('export-menu')!.style.display = 'none'; }}
-                  style={{
-                    width: '100%',
-                    padding: '0.5rem',
-                    border: 'none',
-                    background: 'none',
-                    cursor: 'pointer',
-                    textAlign: 'left',
-                    color: 'var(--text-primary)'
-                  }}
-                >
-                  📊 Excel
-                </button>
-                <button 
-                  onClick={() => { handleExportMonth('csv'); document.getElementById('export-menu')!.style.display = 'none'; }}
-                  style={{
-                    width: '100%',
-                    padding: '0.5rem',
-                    border: 'none',
-                    background: 'none',
-                    cursor: 'pointer',
-                    textAlign: 'left',
-                    color: 'var(--text-primary)'
-                  }}
-                >
-                  📄 CSV
-                </button>
-                <button 
-                  onClick={() => { handleExportMonth('txt'); document.getElementById('export-menu')!.style.display = 'none'; }}
-                  style={{
-                    width: '100%',
-                    padding: '0.5rem',
-                    border: 'none',
-                    background: 'none',
-                    cursor: 'pointer',
-                    textAlign: 'left',
-                    color: 'var(--text-primary)'
-                  }}
-                >
-                  📝 TXT
-                </button>
+                ➖ Dodaj wydatek
+              </button>
+              <div style={{ borderTop: '1px solid var(--border-color)', margin: '0.25rem 0' }}></div>
+              <div style={{ padding: '0.25rem 1rem', fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
+                Eksportuj dane:
               </div>
+              <button 
+                onClick={() => { 
+                  handleExportMonth('excel'); 
+                  document.getElementById('actions-menu')!.style.display = 'none'; 
+                }}
+                style={{
+                  width: '100%',
+                  padding: '0.5rem 1rem',
+                  border: 'none',
+                  background: 'none',
+                  cursor: 'pointer',
+                  textAlign: 'left',
+                  color: 'var(--text-primary)',
+                  fontSize: '0.9rem'
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--bg-hover)'}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+              >
+                📊 Excel
+              </button>
+              <button 
+                onClick={() => { 
+                  handleExportMonth('csv'); 
+                  document.getElementById('actions-menu')!.style.display = 'none'; 
+                }}
+                style={{
+                  width: '100%',
+                  padding: '0.5rem 1rem',
+                  border: 'none',
+                  background: 'none',
+                  cursor: 'pointer',
+                  textAlign: 'left',
+                  color: 'var(--text-primary)',
+                  fontSize: '0.9rem'
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--bg-hover)'}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+              >
+                📄 CSV
+              </button>
+              <button 
+                onClick={() => { 
+                  handleExportMonth('txt'); 
+                  document.getElementById('actions-menu')!.style.display = 'none'; 
+                }}
+                style={{
+                  width: '100%',
+                  padding: '0.5rem 1rem',
+                  border: 'none',
+                  background: 'none',
+                  cursor: 'pointer',
+                  textAlign: 'left',
+                  color: 'var(--text-primary)',
+                  fontSize: '0.9rem'
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--bg-hover)'}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+              >
+                📝 TXT
+              </button>
             </div>
           </div>
         )}
