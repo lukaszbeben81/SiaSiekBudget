@@ -5,11 +5,13 @@ const Database = require('./database');
 const { getRandomJoke } = require('./jokes');
 
 // Wersja aplikacji
-const APP_VERSION = '1.2.3';
+const APP_VERSION = '1.2.4';
 const GITHUB_REPO = 'lukaszbeben81/SiaSiekBudget';
 
 // Konfiguracja auto-updater
-autoUpdater.autoDownload = false; // Nie pobieraj automatycznie
+// Zmieniłem na `true` aby kolejna wersja była pobierana automatycznie.
+// Jeśli chcesz zachować wybór użytkownika, można to później dodać jako ustawienie.
+autoUpdater.autoDownload = true; // Pobieraj automatycznie przy wykryciu aktualizacji
 autoUpdater.autoInstallOnAppQuit = true; // Zainstaluj przy zamykaniu
 
 let mainWindow;
