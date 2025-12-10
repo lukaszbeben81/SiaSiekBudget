@@ -32,14 +32,20 @@ export const getDaysRemaining = (endDate: string, startDate?: string): number =>
     const [startYear, startMonth, startDay] = startDate.split('-').map(Number);
     const startUTC = Date.UTC(startYear, startMonth - 1, startDay);
     
+    // Jeśli dzisiaj jest PRZED datą rozpoczęcia okresu (okres jeszcze się nie rozpoczął)
     if (todayUTC < startUTC) {
-      // Okres jeszcze się nie rozpoczął - zwróć całkowitą liczbę dni okresu
+      // Zwróć całkowitą liczbę dni okresu
       const totalDays = Math.floor((endUTC - startUTC) / (1000 * 60 * 60 * 24)) + 1;
       return totalDays;
     }
+    
+    // Jeśli jesteśmy w trakcie okresu lub po jego rozpoczęciu
+    // Oblicz pozostałe dni od dzisiaj do końca okresu
+    const remaining = Math.floor((endUTC - todayUTC) / (1000 * 60 * 60 * 24));
+    return remaining >= 0 ? remaining : 0;
   }
   
-  // Normalne obliczenie dla trwającego okresu
+  // Jeśli nie podano daty początkowej, oblicz normalne dni pozostałe
   const remaining = Math.floor((endUTC - todayUTC) / (1000 * 60 * 60 * 24));
   return remaining >= 0 ? remaining : 0;
 };

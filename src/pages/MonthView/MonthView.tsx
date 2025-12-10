@@ -465,12 +465,20 @@ const MonthView: React.FC<MonthViewProps> = ({ month, onBack, onRefresh, isArchi
   const dailyTotal = settings.daily_expenses * days;
   
   const daysRemaining = isArchive ? 0 : getDaysRemaining(month.end_date, month.start_date);
+  console.log('🔍 DEBUG getDaysRemaining:', {
+    monthName: month.name,
+    startDate: month.start_date,
+    endDate: month.end_date,
+    isArchive,
+    daysRemaining
+  });
   const dailyExpensesRemaining = daysRemaining * (settings?.daily_expenses || 0);
   
   // totalToPay includes unpaid expenses + remaining daily expenses (not for archive)
   const totalToPay = (totalExpenses - totalPaid) + dailyExpensesRemaining;
   
-  const remaining = totalIncome - totalExpenses - weeklyTotal - dailyTotal;
+  const zakupyD = daysRemaining * (settings?.daily_expenses || 0);
+  const remaining = totalIncome - totalExpenses - zakupyD;
 
   // Helper function to generate tooltip for expense
   const getExpenseTooltip = (expense: Expense): string => {
